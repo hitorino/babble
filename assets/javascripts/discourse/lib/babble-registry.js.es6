@@ -40,6 +40,8 @@ export default Ember.Object.create({
     return _.values(this._bindings).map((t) => t.get('hasAdditionalUnread')).reduce((sn,an) => sn || ax,false)
   }.property('_topics.@each.hasAdditionalUnread'),
   
-  allVisibleUnreadCount: ''
+  allVisibleUnreadCount: function() {
+    return `${this.get('allUnreadCount')}${this.get('allAdditionalUnread') ? '+' : ''}`
+  }.property('allUnreadCount','allAdditionalUnread')
 
 })

@@ -18,17 +18,10 @@ let syncWithPostStream = function(topic) {
     additionalUnread      = totalUnreadCount > windowUnreadCount
   }
 
-  let allUnreadCount = BabbleRegistry.get('allUnreadCount')
-  let allAdditionalUnread = BabbleRegistry.get('allAdditionalUnread')
-
-  if (allUnreadCount) {
-    allVisibleUnreadCount = `${allUnreadCount}${allAdditionalUnread ? '+' : ''}`
-  } 
   if (unreadCount) {
     visibleUnreadCount = `${unreadCount}${additionalUnread ? '+' : ''}`
   }
   
-  BabbleRegistry.set('allVisibleUnreadCount', allVisibleUnreadCount)
 
   topic.set('firstLoadedPostNumber', _.min(postNumbers))
   topic.set('lastLoadedPostNumber',  _.max(postNumbers))
