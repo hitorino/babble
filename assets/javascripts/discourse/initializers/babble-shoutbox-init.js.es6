@@ -43,7 +43,7 @@ export default {
                         return this.attach('link', {
                           action:    'toggleBabble',
                           className: 'badge-notification unread-notifications',
-                          rawLabel:  BabbleRegistry.allUnreadCount
+                          rawLabel:  BabbleRegistry.get('allUnreadCount')
                         })
                       }
                     }));
