@@ -8,10 +8,12 @@ export default createWidget('babble-post', {
 
   buildAttributes() {
     let post = this.state.post
+    let post = this.state.topic
     return {
       'data-post-id':     post.id,
       'data-user-id':     post.user_id,
-      'data-post-number': post.post_number
+      'data-post-number': post.post_number,
+      'data-topic-id':    topic.id
     }
   },
 

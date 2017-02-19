@@ -55,6 +55,8 @@ let scrollToPost = function(topic, postNumber, speed = 400, offset = 30) {
 }
 
 let readPost = function(topic, $container) {
+  let topicId = lastVisibleElement($container.find('.babble-chat'), '.babble-post', 'topic-id')
+  if (topicId != topic.id) { return }
   let postNumber = lastVisibleElement($container.find('.babble-chat'), '.babble-post', 'post-number')
   if (postNumber <= topic.last_read_post_number) { return }
   topic.set('last_read_post_number', postNumber)
