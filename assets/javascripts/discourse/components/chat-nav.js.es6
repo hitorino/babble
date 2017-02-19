@@ -1,4 +1,5 @@
 import Babble from '../lib/babble'
+import BabbleRegistry from '../lib/babble-registry'
 
 export default Ember.Component.extend({
   tagName: 'a',
@@ -13,7 +14,7 @@ export default Ember.Component.extend({
   }.property(),
 
   unread: function() {
-    return Babble.get('unreadCount')
+    return BabbleRegistry.get('allUnreadCount')
   }.property(),
 
   click() {

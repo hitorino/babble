@@ -31,4 +31,8 @@ export default Ember.Object.create({
     let [topicId, x] = _.find([...this._bindings], ([x, elementId]) => { return elementId == component.elementId }) || []
     return this._topics[topicId]
   }
+
+  allUnreadCount: function() {
+    return _topics.map((t) => t.unreadCount>0?t.unreadCount:0).reduce((sn,an) => sn+ax,0)
+  }.property('_topics.@each.unreadCount')
 })
