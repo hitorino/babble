@@ -1,4 +1,5 @@
 import Babble from '../lib/babble'
+import BabbleRegistry from '../lib/babble-registry'
 import allUnreadCount from '../lib/chat-topic-utils'
 import SiteHeader from 'discourse/components/site-header'
 import { ajax } from 'discourse/lib/ajax'
@@ -42,7 +43,7 @@ export default {
                         return this.attach('link', {
                           action:    'toggleBabble',
                           className: 'badge-notification unread-notifications',
-                          rawLabel:  topic.visibleUnreadCount
+                          rawLabel:  BabbleRegistry.allUnreadCount
                         })
                       }
                     }));
