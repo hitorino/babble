@@ -6,7 +6,6 @@ let syncWithPostStream = function(topic) {
   let postNumbers = topic.postStream.posts.map(function(post) { return post.post_number })
   let unreadCount = 0
   let visibleUnreadCount = ''
-  let allVisibleUnreadCount = ''
   let additionalUnread = false
   if (topic.last_read_post_number > topic.highest_post_number) {
     ajax(`/babble/topics/${topic.id}/read/${topic.highest_post_number}.json`)
@@ -18,10 +17,9 @@ let syncWithPostStream = function(topic) {
     additionalUnread      = totalUnreadCount > windowUnreadCount
   }
 
-  if (unreadCount) {
+  if (unreadCount>0) {
     visibleUnreadCount = `${unreadCount}${additionalUnread ? '+' : ''}`
   }
-  
 
   topic.set('firstLoadedPostNumber', _.min(postNumbers))
   topic.set('lastLoadedPostNumber',  _.max(postNumbers))
