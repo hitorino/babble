@@ -4,6 +4,7 @@ import RawHtml from 'discourse/widgets/raw-html';
 import { dateNode } from 'discourse/helpers/node';
 import { avatarImg } from 'discourse/widgets/post'
 import { emojiUnescape } from 'discourse/lib/text'
+import { transformBasicPost } from 'discourse/lib/transform-post'
 
 export default Ember.Object.create({
   render(widget) {
@@ -63,7 +64,7 @@ export default Ember.Object.create({
   },
 
   postName() {
-    return h('div.babble-post-name', this.widget.attach('poster-name', this.post))
+    return h('div.babble-post-name', this.widget.attach('poster-name', transformBasicPost(this.post)))
   },
 
   postDate() {
