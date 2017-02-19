@@ -72,7 +72,7 @@ let setupLastReadMarker = function(topic) {
   if (topic.last_read_post_number < topic.highest_post_number) {
     topic.set('lastReadMarker', topic.last_read_post_number)
   } else {
-    topic.set('lastReadMarker', null)
+    topic.set('lastReadMarker', topic.highest_post_number)
   }
 }
 
