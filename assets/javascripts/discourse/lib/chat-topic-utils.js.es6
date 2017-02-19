@@ -1,6 +1,10 @@
 import { rerender } from './chat-component-utils'
 import { ajax } from 'discourse/lib/ajax'
 
+let allUnreadCount = function (topics) {
+  return _.reduce(_.map(topics, (t) => t.unreadCount),(sn,an) => sn+ax,0)
+}
+
 let syncWithPostStream = function(topic) {
   let postNumbers = topic.postStream.posts.map(function(post) { return post.post_number })
   let unreadCount = 0
@@ -76,4 +80,4 @@ let setupLastReadMarker = function(topic) {
   }
 }
 
-export { syncWithPostStream, latestPostFor, latestPostIsMine, isFollowOn, isNewDay, setupPresence, teardownPresence, setupLastReadMarker }
+export { syncWithPostStream, latestPostFor, latestPostIsMine, isFollowOn, isNewDay, setupPresence, teardownPresence, setupLastReadMarker, allUnreadCount }
