@@ -8,7 +8,7 @@ let syncWithPostStream = function(topic) {
   let additionalUnread = false
 
   if (!latestPostIsMine(topic)) {
-    let totalUnreadCount  = latestPostFor(topic).highest_seen_post_number - topic.last_read_post_number
+    let totalUnreadCount  = latestPostFor(topic).post_number - topic.last_read_post_number
     let windowUnreadCount = _.min([totalUnreadCount, topic.postStream.posts.length])
     unreadCount           = windowUnreadCount
     additionalUnread      = totalUnreadCount > windowUnreadCount
