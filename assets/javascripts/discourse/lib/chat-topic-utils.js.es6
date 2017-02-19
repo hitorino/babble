@@ -1,5 +1,5 @@
 import { rerender } from './chat-component-utils'
-import BabbleRegister from './babble-register'
+import BabbleRegistry from './babble-registry'
 import { ajax } from 'discourse/lib/ajax'
 
 let syncWithPostStream = function(topic) {
@@ -17,8 +17,8 @@ let syncWithPostStream = function(topic) {
     additionalUnread      = totalUnreadCount > windowUnreadCount
   }
 
-  let allUnreadCount = BabbleRegister.get('allUnreadCount')
-  let allAdditionalUnread = BabbleRegister.get('allAdditionalUnread')
+  let allUnreadCount = BabbleRegistry.get('allUnreadCount')
+  let allAdditionalUnread = BabbleRegistry.get('allAdditionalUnread')
 
   if (allUnreadCount) {
     visibleUnreadCount = `${allUnreadCount}${allAdditionalUnread ? '+' : ''}`
