@@ -64,11 +64,14 @@ export default {
                   component.babbleVisible = !component.babbleVisible
                   Babble.bind(component, topic)
 
+                  let page = $('html, body')
                   if (component.babbleVisible) {
-                    $('html, body').css('overflow', 'hidden')
+                    page.css('overflow', 'hidden')
+                    document.ontouchmove = function (e) { e.preventDefault() }
                   } else {
+                    page.css('overflow', 'auto')
+                    document.ontouchmove = function () { return true }
                     Babble.editPost(topic, null)
-                    $('html, body').css('overflow', 'auto')
                   }
                 })
 
