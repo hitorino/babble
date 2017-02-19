@@ -33,11 +33,11 @@ export default Ember.Object.create({
   },
 
   allUnreadCount: function() {
-    return _.values(this._topics).map((t) => t.get('unreadCount')>0?t.get('unreadCount'):0).reduce((sn,an) => sn+ax,0)
+    return _.values(this._topics).map((t) => t.get('unreadCount')>0?t.get('unreadCount'):0).reduce((sn,an) => sn+an,0)
   }.property('_topics.@each.unreadCount'),
 
   allAdditionalUnread: function() {
-    return _.values(this._topics).map((t) => t.get('hasAdditionalUnread')).reduce((sn,an) => sn || ax,false)
+    return _.values(this._topics).map((t) => t.get('hasAdditionalUnread')).reduce((sn,an) => sn || an,false)
   }.property('_topics.@each.hasAdditionalUnread'),
   
   allVisibleUnreadCount: function() {
