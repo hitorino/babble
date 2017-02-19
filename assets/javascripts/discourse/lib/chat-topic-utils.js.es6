@@ -2,7 +2,7 @@ import { rerender } from './chat-component-utils'
 import { ajax } from 'discourse/lib/ajax'
 
 let allUnreadCount = function (topics) {
-  return _.reduce(_.map(topics, (t) => t.unreadCount),(sn,an) => sn+ax,0)
+  return _.reduce(_.map(topics, (t) => t.unreadCount>0?t.unreadCount:0),(sn,an) => sn+ax,0)
 }
 
 let syncWithPostStream = function(topic) {
