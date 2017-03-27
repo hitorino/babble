@@ -10,6 +10,18 @@ import lastVisibleElement from '../lib/last-visible-element'
 import { syncWithPostStream } from '../lib/chat-topic-utils'
 import { ajax } from 'discourse/lib/ajax'
 import { rerender } from '../lib/chat-component-utils'
+import { isAppleDevice } from 'discourse/lib/safari-hacks'
+
+let applyBrowserHacks = function(topic) {
+  Ember.run.scheduleOnce('afterRender', () => {
+    if (!isAppleDevice()) { return }
+    forEachTopicContainer(topic, function($container) {
+      $container.find('.babble-menu').find('.menu-panel.slide-in')
+                .css('padding-bottom', '60px')
+                .css('height', 'calc(100% - 54px) !important')
+    })
+  })
+}
 
 let resizeChat = function(topic) {
   Ember.run.scheduleOnce('afterRender', () => {
@@ -158,4 +170,13 @@ let hasChatElements = function(element) {
   return $(element).find('.babble-chat').length
 }
 
-export { setupResize, teardownResize, scrollToPost, setupScrollContainer, setupComposer, teardownComposer, hasChatElements }
+export {
+  applyBrowserHacks,
+  setupResize,
+  teardownResize,
+  scrollToPost,
+  setupScrollContainer,
+  setupComposer,
+  teardownComposer,
+  hasChatElements
+}

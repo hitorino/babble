@@ -11,6 +11,7 @@ describe ::Babble::TopicsController do
   let!(:topic) { Babble::Topic.save_topic title: "test topic for babble", allowed_group_ids: [group.id] }
   let(:category_topic) { Babble::Topic.save_topic category_chat_params }
   let!(:topic_post) { topic.posts.create(raw: "I am a post", user: user)}
+  let(:category_topic_post) { category_topic.posts.create(raw: "I am a category post", user: user) }
   let!(:another_post) { topic.posts.create(raw: "I am another post", user: another_user) }
   let!(:another_topic) { Babble::Topic.save_topic title: "another test topic", allowed_group_ids: [another_group.id] }
   let(:non_chat_topic) { Fabricate :topic }
@@ -84,122 +85,6 @@ describe ::Babble::TopicsController do
       xhr :get, :show, id: topic.id
       expect(response.status).to eq 403
       expect(response_json['errors']).to be_present
-    end
-  end
-
-  describe "post" do
-    it "adds a new post to the chat topic" do
-      group.users << user
-      expect { xhr :post, :create_post, raw: "I am a test post", id: topic.id }.to change { topic.posts.count }.by(1)
-      expect(response.status).to eq 200
-    end
-
-    it "returns the raw value of the post" do
-      group.users << user
-      xhr :post, :create_post, raw: "I am a test post", id: topic.id
-      expect(JSON.parse(response.body)['raw']).to eq "I am a test post"
-    end
-
-    it "can add a short post to the chat topic" do
-      group.users << user
-      expect { xhr :post, :create_post, raw: "Hi!", id: topic.id }.to change { topic.posts.count }.by(1)
-      expect(response.status).to eq 200
-    end
-
-    it 'does not allow posts with no content to be made' do
-      group.users << user
-      expect { xhr :post, :create_post, id: topic.id }.not_to change { topic.posts.count }
-      expect(response.status).to eq 422
-    end
-
-    it "cannot create a post in a topic the user does not have access to" do
-      user
-      expect { xhr :post, :create_post, raw: "I am a test post!", id: topic.id }.not_to change { topic.posts.count }
-      expect(response.status).to eq 403
-    end
-
-    it "does not allow posts from users who are not logged in" do
-      expect { xhr :post, :create_post, raw: "I am a test post", id: topic.id }.not_to change { topic.posts.count }
-      expect(response.status).to eq 403
-    end
-
-    it "does not affect user's post count" do
-      group.users << user
-      expect { xhr :post, :create_post, raw: "I am a test post", id: topic.id }.not_to change { user.post_count }
-    end
-  end
-
-  describe "flag_post" do
-
-  end
-
-  describe "destroy_post" do
-    let!(:target_post) { topic.posts.create(raw: "I am a post to delete", user: user) }
-
-    it "deletes an existing post" do
-      group.users << user
-      expect { xhr :post, :destroy_post, id: topic.id, post_id: target_post.id }.to_not change { topic.posts.count }
-      expect(target_post.reload.user_deleted).to eq true
-      expect(response.status).to eq 200
-    end
-
-    it "does not allow deleting of posts the user can't delete" do
-      group.users << user
-      group.users << another_user
-      xhr :post, :destroy_post, id: topic.id, post_id: another_post.id
-      expect(response.status).to eq 403
-    end
-
-    it "allows admins to delete others' posts" do
-      user.update(admin: true)
-      group.users << user
-      group.users << another_user
-      expect { xhr :post, :destroy_post, id: topic.id, post_id: target_post.id }.to change { topic.posts.count }.by(-1)
-      expect(response.status).to eq 200
-    end
-  end
-
-  describe "update_post" do
-    let(:raw) { "Here is an updated post!" }
-
-    it "updates an existing post" do
-      group.users << user
-      expect { xhr :post, :update_post, raw: raw, id: topic.id, post_id: topic_post.id }.not_to change { topic.posts.count }
-      expect(response.status).to eq 200
-      expect(topic_post.reload.raw).to eq raw
-    end
-
-    it "does not allow updates to posts the user can't edit" do
-      group.users << user
-      group.users << another_user
-      xhr :post, :update_post, raw: raw, id: topic.id, post_id: another_post.id
-      expect(response.status).to eq 403
-    end
-
-    it "allows admins to update others' posts" do
-      user.update(admin: true)
-      group.users << user
-      group.users << another_user
-      xhr :post, :update_post, raw: raw, id: topic.id, post_id: topic_post.id
-      expect(response.status).to eq 200
-      expect(topic_post.reload.raw).to eq raw
-    end
-
-    it "does not allow updates from users who are not logged in" do
-      xhr :post, :update_post, raw: raw, id: topic.id, post_id: topic_post.id
-      expect(response.status).to eq 403
-    end
-
-    it "does not allow posts to be updated to no content" do
-      group.users << user
-      xhr :post, :update_post, raw: '', id: topic.id, post_id: topic_post.id
-      expect(response.status).to eq 422
-    end
-
-    it "ensures the post belongs to the topic" do
-      another_group.users << user
-      xhr :post, :update_post, raw: raw, id: another_topic.id, post_id: topic_post.id
-      expect(response.status).to eq 422
     end
   end
 
@@ -298,7 +183,7 @@ describe ::Babble::TopicsController do
       user.update(admin: false)
       xhr :post, :update, id: topic.id, topic: chat_params
       expect(response.status).to eq 403
-      expect(Babble::Topic.find(id: topic.id).title).to_not eq chat_params[:title]
+      expect(Babble::Topic.find_by(id: topic.id).title).to_not eq chat_params[:title]
     end
 
     it "does not allow multiple chat channels on a single category" do
@@ -322,6 +207,14 @@ describe ::Babble::TopicsController do
     end
 
     it "reverts a category's chat topic id" do
+      xhr :delete, :destroy, id: category_topic.id
+      expect(response).to be_success
+      expect(Babble::Topic.available_topics).not_to include category_topic
+      expect(category_topic.category.reload.custom_fields['chat_topic_id']).to_not eq category_topic.id
+    end
+
+    it "reverts a category's chat topic id if the topic has posts" do
+      category_topic_post
       xhr :delete, :destroy, id: category_topic.id
       expect(response).to be_success
       expect(Babble::Topic.available_topics).not_to include category_topic

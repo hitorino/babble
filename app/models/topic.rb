@@ -24,8 +24,11 @@ class ::Babble::Topic
     end
   end
 
-  def self.destroy_topic(topic)
-    topic.tap { |t| update_category(topic.category_id, nil) if topic.category_id }.destroy
+  def self.destroy_topic(topic, user)
+    topic.tap do |t|
+      Babble::PostDestroyer.new(user, topic.ordered_posts.first).destroy if topic.ordered_posts.any?
+      update_category(topic.category_id, nil)                            if topic.category_id
+    end.destroy
   end
 
   def self.update_category(category_id, topic_id)
@@ -55,7 +58,7 @@ class ::Babble::Topic
   def self.available_topics_for(guardian)
     return available_topics if guardian.is_admin?
     user_id = guardian.anonymous? ? nil : guardian.user.id
-    category_ids = Category.scoped_to_permissions(guardian, [:readonly]).pluck(:id)
+    category_ids = Category.post_create_allowed(guardian).pluck(:id)
     available_topics
       .joins("LEFT OUTER JOIN topic_allowed_groups tg ON tg.topic_id = topics.id")
       .joins("LEFT OUTER JOIN group_users gu ON gu.group_id = tg.group_id")

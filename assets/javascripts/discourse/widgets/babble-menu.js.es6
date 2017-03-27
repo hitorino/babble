@@ -4,7 +4,11 @@ import Babble from '../lib/babble'
 import { ajax } from 'discourse/lib/ajax'
 
 export default createWidget('babble-menu', {
-  tagName: 'li.babble-menu',
+  tagName:  'div.babble-menu',
+
+  buildKey(attrs) {
+    return `babble-menu`
+  },
 
   defaultState(attrs) {
     return {
@@ -14,9 +18,9 @@ export default createWidget('babble-menu', {
     }
   },
 
-  toggleView() {
+  toggleView(topic) {
     this.state.viewingChat = !this.state.viewingChat
-    this.sendWidgetAction('toggleBabbleViewingChat')
+    if(topic) { this.sendWidgetAction('changeTopic', topic) }
   },
 
   clickOutside() {

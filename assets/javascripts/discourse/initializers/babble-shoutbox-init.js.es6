@@ -3,11 +3,12 @@ import BabbleRegistry from '../lib/babble-registry'
 import SiteHeader from 'discourse/components/site-header'
 import { ajax } from 'discourse/lib/ajax'
 import { withPluginApi } from 'discourse/lib/plugin-api'
+import { queryRegistry } from 'discourse/widgets/widget'
 
 export default {
   name: 'babble-shoutbox-init',
   initialize() {
-    if (!Discourse.SiteSettings.babble_shoutbox) { return }
+    if (Babble.disabled() || !Discourse.SiteSettings.babble_shoutbox) { return }
 
     SiteHeader.reopen({
 
@@ -23,54 +24,68 @@ export default {
               Babble.bind(this, Babble.buildTopic(data))
 
               withPluginApi('0.1', api => {
-                api.decorateWidget('header-icons:before', function(helper) {
-                  const topic = Babble.topicForComponent(component)
-                  let contents = []
+                const _html = queryRegistry('header').prototype.html
 
-                  if (!Babble.disabled() &&
-                      api.getCurrentUser() &&
-                      Discourse.SiteSettings.babble_enabled) {
+                api.reopenWidget('header', {
+                  html(attrs, state) {
+                    const _super  = _html.call(this, attrs, state)
+                    let panels = _super.children[0].children[1].children
 
-                    contents.push(helper.attach('header-dropdown', {
-                      title:         'babble.title',
-                      icon:          Discourse.SiteSettings.babble_icon,
-                      iconId:        'babble-icon',
-                      active:        component.babbleVisible,
-                      action:        'toggleBabble',
-                      contents() {
-                        if (!topic.visibleUnreadCount || component.babbleVisible) { return }
-                        return this.attach('link', {
-                          action:    'toggleBabble',
-                          className: 'badge-notification unread-notifications',
-                          rawLabel:  topic.visibleUnreadCount
-                        })
-                      }
-                    }));
-                  }
-                  if (component.babbleVisible) {
-                    if (component.babbleViewingChat === undefined) {
-                      component.babbleViewingChat = true
+                    if (state.babbleViewingChat === undefined) { state.babbleViewingChat = true }
+                    if (state.babbleVisible) {
+                      panels.push(this.attach('babble-menu', {
+                        availableTopics:       availableTopics,
+                        topic:                 Babble.topicForComponent(component),
+                        viewingChat:           state.babbleViewingChat
+                      }))
                     }
-                    contents.push(helper.attach('babble-menu', {
-                      availableTopics:       availableTopics,
-                      topic:                 topic,
-                      viewingChat:           component.babbleViewingChat
-                    }))
+                    return _super
                   }
-                  return contents
                 })
 
                 api.attachWidgetAction('header', 'toggleBabble', function() {
+                  const page = $('html, body')
                   const topic = Babble.topicForComponent(component)
-                  component.babbleVisible = !component.babbleVisible
+
+                  this.state.babbleVisible = !this.state.babbleVisible
+                  component.babbleVisible = this.state.babbleVisible
                   Babble.bind(component, topic)
 
-                  if (!component.babbleVisible) { Babble.editPost(topic, null) }
+                  if (this.state.babbleVisible) {
+                    page.css('overflow', 'hidden')
+                    Ember.run.scheduleOnce('afterRender', function() {
+                      // hack to force redraw of the side panel, which occasionally draws incorrectly
+                      page.find('.babble-menu').find('.menu-panel.slide-in').hide().show(0)
+                    })
+                  } else {
+                    page.css('overflow', 'auto')
+                    Babble.editPost(topic, null)
+                  }
                 })
 
-                api.attachWidgetAction('header', 'toggleBabbleViewingChat', function(topic) {
-                  component.babbleViewingChat = !component.babbleViewingChat
+                api.attachWidgetAction('header', 'changeTopic', function(topic) {
                   Babble.bind(component, topic)
+                })
+
+                api.decorateWidget('header-icons:before', function(helper) {
+                  if (!api.getCurrentUser()) { return [] }
+                  const topic = Babble.topicForComponent(component)
+
+                  return helper.attach('header-dropdown', {
+                    title:         'babble.title',
+                    icon:          Discourse.SiteSettings.babble_icon,
+                    iconId:        'babble-icon',
+                    active:        component.babbleVisible,
+                    action:        'toggleBabble',
+                    contents() {
+                      if (!topic.visibleUnreadCount || component.babbleVisible) { return }
+                      return this.attach('link', {
+                        action:    'toggleBabble',
+                        className: 'badge-notification unread-notifications',
+                        rawLabel:  topic.visibleUnreadCount
+                      })
+                    }
+                  })
                 })
 
                 component.queueRerender()

@@ -7,6 +7,10 @@ import { ajax } from 'discourse/lib/ajax'
 export default createWidget('babble-composer', {
   tagName: 'div.babble-post-composer',
 
+  buildKey(attrs) {
+    return `babble-composer-${attrs.topic.id}`
+  },
+
   defaultState(attrs) {
     return {
       editing:         attrs.isEditing,
@@ -61,14 +65,14 @@ export default createWidget('babble-composer', {
   create(text) {
     this.state.submitDisabled = true
     Babble.createPost(this.state.topic, text).finally(() => {
-      this.state.submitDisabled = false
+      this.state.submitDisabled = undefined
     })
   },
 
   update(text) {
     if (this.state.post.raw.trim() == text.trim()) { return }
     Babble.updatePost(this.state.topic, this.state.post, text).finally(() => {
-      this.state.submitDisabled = false
+      this.state.submitDisabled = undefined
     })
   },
 
@@ -99,7 +103,7 @@ export default createWidget('babble-composer', {
 
     // only fire typing events if input has changed
     // TODO: expand this to account for backspace / delete keys too
-    if (event.key.length === 1) { this.announceTyping() }
+    if (event.key && event.key.length === 1) { this.announceTyping() }
   },
 
   announceTyping: _.throttle(function() {

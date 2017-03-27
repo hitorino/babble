@@ -5,7 +5,7 @@ import elementIsVisible from '../lib/element-is-visible'
 import lastVisibleElement from '../lib/last-visible-element'
 import debounce from 'discourse/lib/debounce'
 import { ajax } from 'discourse/lib/ajax'
-import { scrollToPost, setupResize, teardownResize, setupScrollContainer, setupComposer, teardownComposer, hasChatElements } from '../lib/chat-element-utils'
+import { applyBrowserHacks, scrollToPost, setupResize, teardownResize, setupScrollContainer, setupComposer, teardownComposer, hasChatElements } from '../lib/chat-element-utils'
 import { syncWithPostStream, latestPostFor, latestPostIsMine, setupPresence, teardownPresence, setupLastReadMarker } from '../lib/chat-topic-utils'
 import { forEachTopicContainer } from '../lib/chat-topic-iterators'
 import { rerender } from '../lib/chat-component-utils'
@@ -45,6 +45,7 @@ export default Ember.Object.create({
         setupPresence(topic)
         setupComposer(topic)
         scrollToPost(topic, topic.last_read_post_number, 0)
+        applyBrowserHacks(topic)
       }
       rerender(topic)
     })
@@ -171,13 +172,13 @@ export default Ember.Object.create({
 
   handleTyping(topic, data) {
     if (Discourse.User.current() && data.id == Discourse.User.current().id) { return }
-    topic.set(`typing.${data.username}`, { user: data, lastTyped: moment() })
+    topic.typing[data.username] = { user: data, lastTyped: moment() }
     rerender(topic)
   },
 
   handleOnline(topic, data) {
     if (Discourse.User.current() && data.id == Discourse.User.current().id) { return }
-    topic.set(`online.${data.username}`, { user: data, lastSeen: moment() })
+    topic.online[data.username] = { user: data, lastSeen: moment() }
     rerender(topic)
   },
 
