@@ -11,14 +11,13 @@ import { syncWithPostStream } from '../lib/chat-topic-utils'
 import { ajax } from 'discourse/lib/ajax'
 import { rerender } from '../lib/chat-component-utils'
 import { isAppleDevice } from 'discourse/lib/safari-hacks'
+import positioningWorkaround from 'discourse/lib/safari-hacks' 
 
 let applyBrowserHacks = function(topic) {
   Ember.run.scheduleOnce('afterRender', () => {
     if (!isAppleDevice()) { return }
     forEachTopicContainer(topic, function($container) {
-      $container.find('.babble-menu').find('.menu-panel.slide-in')
-                .css('padding-bottom', '60px')
-                .css('height', 'calc(100% - 54px) !important')
+      positioningWorkaround($container.find('.babble-menu').find('.menu-panel.slide-in'))
     })
   })
 }
