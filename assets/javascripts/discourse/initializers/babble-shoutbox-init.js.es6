@@ -4,6 +4,7 @@ import SiteHeader from 'discourse/components/site-header'
 import { ajax } from 'discourse/lib/ajax'
 import { withPluginApi } from 'discourse/lib/plugin-api'
 import { queryRegistry } from 'discourse/widgets/widget'
+import Mobile from 'discourse/lib/mobile'
 
 export default {
   name: 'babble-shoutbox-init',
@@ -52,11 +53,15 @@ export default {
                   Babble.bind(component, topic)
 
                   if (this.state.babbleVisible) {
-                    page.css('overflow', 'hidden')
-                    Ember.run.scheduleOnce('afterRender', function() {
-                      // hack to force redraw of the side panel, which occasionally draws incorrectly
-                      page.find('.babble-menu').find('.menu-panel.slide-in').hide().show(0)
-                    })
+                    if (Mobile.isMobileDevice) {
+                      page.css('overflow', 'hidden')
+                      Ember.run.scheduleOnce('afterRender', function() {
+                        // hack to force redraw of the side panel, which occasionally draws incorrectly
+                        page.find('.babble-menu').find('.menu-panel.slide-in').hide().show(0)
+                      })
+                    } else {
+                      page.css('overflow', 'auto')
+                    }
                   } else {
                     page.css('overflow', 'auto')
                     Babble.editPost(topic, null)
