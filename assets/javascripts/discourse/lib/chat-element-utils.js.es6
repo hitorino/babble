@@ -12,14 +12,66 @@ import { ajax } from 'discourse/lib/ajax'
 import { rerender } from '../lib/chat-component-utils'
 import { isAppleDevice } from 'discourse/lib/safari-hacks'
 
+$.fn.mobileFix = function (options) {
+    const $htmlbody = $('html,body');
+    let $parent = $(this);
+    let windowHeight=$(document).height();
+    function focusin(e) {
+        const currentHeight = $(document).height();
+        windowHeight = currentHeight > windowHeight? currentHeight:windowHeight;
+        $htmlbody.css('height','100%');
+        console.log($parent.position().top);
+        $parent.css('top','55px').css('height',$htmlbody.height()-55-216+'px');
+    }
+    
+    function focusout(e) {
+        const currentHeight = $(document).height();
+        windowHeight = currentHeight > windowHeight? currentHeight:windowHeight;
+        $htmlbody.css('height','100%');
+        console.log($parent.position().top);
+        $parent.css('top','55px').css('height',$htmlbody.height()-55+'px');
+    }
+    //$parent.focusout(focusout).focusin(focusin);
+    $parent.find(options.inputElements).on('focus input focusin',focusin).on('blur focusout',focusout);
+    $parent.on('remove', function(){$htmlbody.css('height','')});
+    $parent.css('top','55px').css('height',$htmlbody.height()-55+'px');
+    return this; // Allowing chaining
+};
+
 let applyBrowserHacks = function(topic) {
+  const chrome_version = getChromeVersion();
+  const android_version = getAndroidVersion();
+  function fix_babble_chat_size ($menu_panel) {
+    let sub = (chrome_version && chrome_version >= 56 && android_version)?-55:0
+    $menu_panel.find(".babble-chat").css("height","100%");
+    let size = $menu_panel.find(".babble-chat").height();
+    $menu_panel.find(".babble-chat").css("height",size+sub+"px");
+  }
+
+  function getChromeVersion () {
+    let raw = navigator.userAgent.match(/Chrom(e|ium)\/([0-9]+)\./);
+    return raw ? parseInt(raw[2], 10) : false;
+  }
+
+  function getAndroidVersion(ua) {
+    ua = (ua || navigator.userAgent).toLowerCase();
+    let match = ua.match(/android\s([0-9\.]*)/);
+    return match ? match[1] : false;
+  }
   Ember.run.scheduleOnce('afterRender', () => {
-    if (!isAppleDevice()) { return }
-    forEachTopicContainer(topic, function($container) {
-      $container.find('.babble-menu').find('.menu-panel.slide-in')
-                .css('padding-bottom', '60px')
-                .css('height', 'calc(100% - 54px) !important')
-    })
+    if (isAppleDevice()) {
+      forEachTopicContainer(topic, function($container) {
+        const menu_panel = $container.find('.babble-menu').find('.menu-panel.slide-in')
+        menu_panel.mobileFix({inputElements:'input, textarea', addClass: 'fixfixed'})
+      })
+    } else {
+      $(window).on('resize', ()=> {
+        forEachTopicContainer(topic, function($container) {
+          const menu_panel = $container.find('.babble-menu').find('.menu-panel.slide-in')
+          fix_babble_chat_size(menu_panel)
+        })
+      })
+    }
   })
 }
 
