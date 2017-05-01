@@ -42,15 +42,11 @@ export default {
                   Babble.bind(component, topic)
 
                   if (this.state.babbleVisible) {
-                    if (Mobile.isMobileDevice) {
-                      page.css('overflow', 'hidden')
-                      Ember.run.scheduleOnce('afterRender', function() {
-                        // hack to force redraw of the side panel, which occasionally draws incorrectly
-                        page.find('.babble-menu').find('.menu-panel.slide-in').hide().show(0)
-                      })
-                    } else {
-                      page.css('overflow', 'auto')
-                    }
+                    page.css('overflow', 'hidden')
+                    Ember.run.scheduleOnce('afterRender', function() {
+                      // hack to force redraw of the side panel, which occasionally draws incorrectly
+                      page.find('.babble-menu').find('.menu-panel.slide-in').hide().show(0)
+                    })
                   } else {
                     page.css('overflow', 'auto')
                     Babble.editPost(topic, null)
