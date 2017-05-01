@@ -13,28 +13,9 @@ import { rerender } from '../lib/chat-component-utils'
 import { isAppleDevice } from 'discourse/lib/safari-hacks'
 
 $.fn.mobileFix = function (options) {
-    const $htmlbody = $('html,body');
     let $parent = $(this);
-    let windowHeight=$(document).height();
-    function focusin(e) {
-        const currentHeight = $(document).height();
-        windowHeight = currentHeight > windowHeight? currentHeight:windowHeight;
-        $htmlbody.css('height','100%');
-        console.log($parent.position().top);
-        $parent.css('top','55px').css('height',$htmlbody.height()-55-216+'px');
-    }
-    
-    function focusout(e) {
-        const currentHeight = $(document).height();
-        windowHeight = currentHeight > windowHeight? currentHeight:windowHeight;
-        $htmlbody.css('height','100%');
-        console.log($parent.position().top);
-        $parent.css('top','55px').css('height',$htmlbody.height()-55+'px');
-    }
-    //$parent.focusout(focusout).focusin(focusin);
-    $parent.find(options.inputElements).on('focus input focusin',focusin).on('blur focusout',focusout);
-    $parent.on('remove', function(){$htmlbody.css('height','')});
-    $parent.css('top','55px').css('height',$htmlbody.height()-55+'px');
+    $parent.css('transform','translate3d(0,0,0)')
+    $parent.find('*[position=fixed]').css('transform','translate3d(0,0,0)')
     return this; // Allowing chaining
 };
 
@@ -65,12 +46,14 @@ let applyBrowserHacks = function(topic) {
         menu_panel.mobileFix({inputElements:'input, textarea', addClass: 'fixfixed'})
       })
     } else {
+      if (chrome_version && chrome_version >= 56 && android_version) {
       $(window).on('resize', ()=> {
         forEachTopicContainer(topic, function($container) {
           const menu_panel = $container.find('.babble-menu').find('.menu-panel.slide-in')
           fix_babble_chat_size(menu_panel)
         })
       })
+      }
     }
   })
 }
