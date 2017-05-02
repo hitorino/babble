@@ -116,7 +116,14 @@ let setupScrollContainer = function(topic) {
     if (!hasChatElements($container)) { return }
 
     let $scrollContainer = $($container).find('.babble-list[scroll-container=inactive]')
-    if (!$scrollContainer.length) { console.warn("Babble scroll container already active or could not be found"); return }
+    if ($scrollContainer.length==0) {
+      if ($($container).find('.babble-list').length!=0) {
+        console.warn("Babble scroll container already active");
+      } else {
+        console.warn("Babble scroll container could not be found");
+        return;
+      }
+    }
 
     $($scrollContainer).on('scroll.discourse-babble-scroll', debounce(() => {
       readPost(topic, $container)
@@ -135,7 +142,15 @@ let setupComposer = function(topic, opts = { emojis: true, mentions: true }) {
       if (!hasChatElements($container)) { return }
 
       const $textarea  = $($container).find('.babble-post-composer textarea[babble-composer=inactive]')
-      if (!$textarea.length) { console.warn("Babble composer already active or could not be found"); return }
+      const $textareaActive  = $($container).find('.babble-post-composer textarea')
+      if (!$textarea.length) { 
+        if ($textareaActive.length) {
+          console.warn("Babble composer already active or could not be found");
+        } else {
+          console.warn("Babble composer already active or could not be found");
+          return
+        }
+      }
 
       autosize($textarea)
 
