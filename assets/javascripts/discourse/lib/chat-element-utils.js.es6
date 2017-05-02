@@ -143,11 +143,11 @@ let setupComposer = function(topic, opts = { emojis: true, mentions: true }) {
 
       const $textarea  = $($container).find('.babble-post-composer textarea[babble-composer=inactive]')
       const $textareaActive  = $($container).find('.babble-post-composer textarea')
-      if (!$textarea.length) { 
-        if ($textareaActive.length) {
-          console.warn("Babble composer already active or could not be found");
+      if ($textarea.length==0) { 
+        if ($textareaActive.length!=0) {
+          console.warn("Babble composer already active")
         } else {
-          console.warn("Babble composer already active or could not be found");
+          console.warn("Babble composer could not be found");
           return
         }
       }
