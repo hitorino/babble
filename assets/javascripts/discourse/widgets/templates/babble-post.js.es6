@@ -28,6 +28,7 @@ export default Ember.Object.create({
                      .startOf('day')
                      .calendar({ lastWeek: 'dddd' })
                      .replace('at 12:00 AM', '')
+                     .replace('00:00', '')
     return h('div.babble-post-new-day', h('div.babble-post-new-day-message', date))
   },
 
