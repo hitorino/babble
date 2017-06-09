@@ -10,7 +10,7 @@ export default Ember.Component.extend({
   }.property(),
 
   hasUnread: function() {
-    return this.get('unread') > 0
+    return this.get('allUnreadCount') > 0
   }.property(),
 
   unread: function() {
