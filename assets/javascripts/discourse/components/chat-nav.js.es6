@@ -10,7 +10,7 @@ export default Ember.Component.extend({
   }.property(),
 
   hasUnread: function() {
-    return this.get('allUnreadCount') > 0
+    return BabbleRegistry.get('allUnreadCount') > 0
   }.property(),
 
   unread: function() {
