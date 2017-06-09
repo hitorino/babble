@@ -29,7 +29,8 @@ export default createWidget('babble-chat', {
   goToChat(e) {
     if (!Discourse.SiteSettings.babble_full_page || !this.state.category || !this.state.topic) { return }
     this.sendWidgetAction('toggleBabble')
-    let path = `/chat/${this.state.category.slug}/${this.state.topic.id}`
+    let pathCategory = this.state.category.slug ? this.state.category.slug : `${this.state.category.id}-category`
+    let path = `/chat/${pathCategory}/${this.state.topic.id}`
     if (e.ctrlKey || e.metaKey) {
       window.open(path, '_blank', 'height=500,width=200,model=yes')
     }  else {
