@@ -73,7 +73,7 @@ class ::Babble::PostsController < ::ApplicationController
   def created_callback(post)
     if SiteSetting.babble_remote_post && !params[:skip_callback]
       Excon.post(SiteSetting.babble_remote_url,
-        body: { current_user: current_user.username, message: post.cooked }.to_json,
+	 body: { current_user: current_user.username, message: post.cooked, topic_id: post.topic_id }.to_json,
         headers: { 'Content-Type' => 'application/json', 'Accept' => 'applicaton/json' }
       )
     end
