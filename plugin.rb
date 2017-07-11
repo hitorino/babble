@@ -60,4 +60,12 @@ after_initialize do
     singleton_class.prepend ForDigest
   end
 
+  class ::PostAlerter
+    old_notify_non_pm_users = instance_method(:notify_non_pm_users)
+    define_method(:notify_non_pm_users) do |users, type, post, opts = {}|
+      return if post.topic.archetype=='chat'
+      return old_notify_non_pm_users.bind(self).(users,type,post,opts)
+    end
+  end
+
 end
