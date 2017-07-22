@@ -56,7 +56,7 @@ export default Ember.Object.create({
   
   availableTopicUnread(topic) {
     return h('spin.babble-list-unread',topic.get('visibleUnreadCount'))
-  }
+  },
 
   loadingSpinner(visible) {
     if (!visible) { return }
