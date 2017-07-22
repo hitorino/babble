@@ -41,6 +41,7 @@ export default Ember.Object.create({
   availableTopicListItem(topic) {
     return h('li.babble-available-topic.row', [
       this.availableTopicLink(topic),
+      this.availableTopicUnread(topic),
       this.loadingSpinner(Babble.loadingTopicId === topic.id)
     ])
   },
