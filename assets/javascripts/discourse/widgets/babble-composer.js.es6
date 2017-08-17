@@ -31,6 +31,7 @@ export default createWidget('babble-composer', {
 
   selectEmoji() {
     let $composer = this.composerElement()
+/*
     showSelector({
       register: this.register,
       onSelect: function(emoji) {
@@ -43,6 +44,7 @@ export default createWidget('babble-composer', {
 
     $('.emoji-modal-wrapper').on('click', (e) => { e.stopPropagation() })
     $('body').on('keydown.emoji',         (e) => { e.stopPropagation() })
+*/
   },
 
   cancel() {
