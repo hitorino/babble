@@ -1,5 +1,5 @@
 import { createWidget } from 'discourse/widgets/widget'
-import { showSelector } from "discourse/lib/emoji/toolbar"
+//import { showSelector } from "discourse/lib/emoji/toolbar"
 import Babble from "../lib/babble"
 import template from "../widgets/templates/babble-composer"
 import { ajax } from 'discourse/lib/ajax'
