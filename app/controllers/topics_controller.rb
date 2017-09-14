@@ -35,8 +35,7 @@ class ::Babble::TopicsController < ::ApplicationController
 
   def read
     perform_fetch do
-      r = [[topic_user.last_read_post_number,params[:post_number].to_i].max,topic.highest_post_number].min
-      topic_user.update(last_read_post_number: r) if topic_user.last_read_post_number.to_i != r
+      topic_user.update(last_read_post_number: params[:post_number]) if topic_user.last_read_post_number.to_i < params[:post_number].to_i
       respond_with topic, serializer: Babble::TopicSerializer
     end
   end
