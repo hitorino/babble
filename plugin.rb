@@ -81,6 +81,10 @@ after_initialize do
     singleton_class.prepend TopicURL
   end
 
+  class ::TopicListItemSerializer
+    attributes :archetype
+  end
+
   class ::PostAlerter
     define_method(:notify_non_pm_users) do |users, type, post, opts = {}|
       return if post.topic.archetype=='chat'
