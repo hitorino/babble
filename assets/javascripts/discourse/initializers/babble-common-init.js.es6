@@ -2,7 +2,7 @@ import { queryRegistry } from 'discourse/widgets/widget'
 import { withPluginApi } from 'discourse/lib/plugin-api'
 import reopenWidget      from '../lib/reopen-widget'
 import { on, observes }  from 'ember-addons/ember-computed-decorators'
-import { Topic } from 'discourse/models/topic'
+import Topic from 'discourse/models/topic'
 
 export default {
   name: 'babble-common-init',
