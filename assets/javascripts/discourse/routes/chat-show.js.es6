@@ -47,7 +47,7 @@ export default Discourse.Route.extend({
     const nearPost = this.get('nearPost')
     let path = `/babble/topics/${model.chat_topic_id}`
     if (nearPost) {
-      path += `/${nearPost}`
+      path += `/read/${nearPost}`
     }
     path += '.json'
 
