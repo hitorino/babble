@@ -36,7 +36,6 @@ after_initialize do
 
   babble_require 'models/archetype'
   babble_require 'models/guardian'
-  babble_require 'models/topic_query'
   babble_require 'models/topic'
   babble_require 'models/user_action'
   babble_require 'models/user_summary'
@@ -52,12 +51,34 @@ after_initialize do
   end
 
   class ::Topic
+
     module ForDigest
       def for_digest(user, since, opts=nil)
         super(user, since, opts).where('archetype <> ?', Archetype.chat)
       end
     end
+
+    module TopicURL
+      def chat?(id)
+        result = Topic.find_by_sql [
+          "SELECT 1 FROM topics WHERE id = ? AND archetype <> 'chat'",
+          id]
+        result.length==1 && result[0]==1
+      end
+      def url(id, slug, post_number = nil)
+        url = "#{Discourse.base_url}"
+        unless Topic.chat?(id)
+          url << "/t/#{slug}/#{id}"
+          url << "/#{post_number}" if post_number.to_i > 1
+        else
+          url << "/chat/#{id}"
+        end
+        url
+      end
+    end
+
     singleton_class.prepend ForDigest
+    singleton_class.prepend TopicURL
   end
 
   class ::PostAlerter

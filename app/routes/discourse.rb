@@ -1,5 +1,6 @@
 Discourse::Application.routes.append do
   mount ::Babble::Engine, at: "/babble", :as => "babble"
+  get '/chat/:id' => 'babble/topics#show'
   get '/chat/:slug/:id' => 'babble/topics#show'
   get '/chat/:slug/:id/:near_post' => 'babble/topics#show'
   get '/t/chat/:slug/:id' => 'babble/topics#show'
