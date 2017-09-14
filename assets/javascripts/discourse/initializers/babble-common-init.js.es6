@@ -65,7 +65,7 @@ export default {
         if (this.get('archetype')!=='chat')
           return Discourse.getURL("/t/") + slug + "/" + (this.get('id'));
         else
-          return Discourse.getURL("/chat/") + slug + "/" + (this.get('id'));
+          return Discourse.getURL("/chat/") + this.get('category.fullSlug')+ "/" + (this.get('id'));
       }.property('id','slug')
     });
   }
