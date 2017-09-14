@@ -61,9 +61,9 @@ after_initialize do
     module TopicURL
       def chat?(id)
         result = Topic.find_by_sql [
-          "SELECT 1 FROM topics WHERE id = ? AND archetype <> 'chat'",
+          "SELECT 1 FROM topics WHERE id = ? AND archetype = 'chat'",
           id]
-        result.length==1 && result[0]==1
+        result.length==1
       end
       def url(id, slug, post_number = nil)
         url = "#{Discourse.base_url}"
@@ -81,7 +81,7 @@ after_initialize do
     singleton_class.prepend TopicURL
   end
 
-  class ::TopicListItemSerializer
+  TopicListItemSerializer.class_eval do
     attributes :archetype
   end
 

@@ -2,6 +2,7 @@ import { queryRegistry } from 'discourse/widgets/widget'
 import { withPluginApi } from 'discourse/lib/plugin-api'
 import reopenWidget      from '../lib/reopen-widget'
 import { on, observes }  from 'ember-addons/ember-computed-decorators'
+import { Topic } from 'discourse/models/topic'
 
 export default {
   name: 'babble-common-init',
@@ -55,5 +56,17 @@ export default {
         }
       })
     })
+    Topic.reopen({
+      url: function() {
+        let slug = this.get('slug') || '';
+        if (slug.trim().length === 0) {
+          slug = "topic";
+        }
+        if (this.get('archetype')!=='chat')
+          return Discourse.getURL("/t/") + slug + "/" + (this.get('id'));
+        else
+          return Discourse.getURL("/chat/") + slug + "/" + (this.get('id'));
+      }.property('id','slug')
+    });
   }
 }
