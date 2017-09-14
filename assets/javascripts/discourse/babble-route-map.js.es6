@@ -1,7 +1,7 @@
 export default function() {
   this.route('chatDiscovery', {path: '/chat', resetNamespace: true}, function() {
     this.route('chat', {path: '/', resetNamespace: true}, function() {
-      this.route('showCategory', {path: '/:id'})
+      this.route('show', {path: '/:id'})
       this.route('showCategory', {path: '/:category/:id'})
       this.route('showCategoryNear', {path: '/:category/:id/:post_number'})
     })
