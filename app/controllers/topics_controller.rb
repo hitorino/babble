@@ -35,7 +35,12 @@ class ::Babble::TopicsController < ::ApplicationController
 
   def read
     perform_fetch do
-      topic_user.update(last_read_post_number: params[:post_number]) if topic_user.last_read_post_number.to_i < params[:post_number].to_i
+      if params[:post_number].to_i < topic.highest_post_number
+        topic_user.update(last_read_post_number: params[:post_number]) if topic_user.last_read_post_number.to_i < params[:post_number].to_i
+        topic_user.update(highest_seen_post_number: params[:post_number]) if topic_user.highest_seen_post_number.to_i < params[:post_number].to_i
+      else
+        topic_user.update(last_read_post_number: topic.highest_post_number, highest_seen_post_number: topic.highest_post_number)
+      end
       respond_with topic, serializer: Babble::TopicSerializer
     end
   end
