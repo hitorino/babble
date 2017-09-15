@@ -117,6 +117,7 @@ let setupScrollContainer = function(topic) {
     if ($scrollContainer.length==0) {
       if ($($container).find('.babble-list').length!=0) {
         console.warn("Babble scroll container already active");
+        return;
       } else {
         console.warn("Babble scroll container could not be found");
         return;
@@ -144,6 +145,7 @@ let setupComposer = function(topic, opts = { emojis: true, mentions: true }) {
       if ($textarea.length==0) { 
         if ($textareaActive.length!=0) {
           console.warn("Babble composer already active")
+          return
         } else {
           console.warn("Babble composer could not be found");
           return
