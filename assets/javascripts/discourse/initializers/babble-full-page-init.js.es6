@@ -25,7 +25,8 @@ export default {
         let title = I18n.t('babble.nav_title')
 
         if (this.get('count') > 0) {
-          title += ` (${this.get('count')})`
+//          title += ` (${this.get('count')})`
+          title = I18n.t('babble.nav_title_paren',{unread: this.get('count')})
         }
         return title
       }.property('categoryName', 'name', 'count')

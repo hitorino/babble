@@ -12,6 +12,7 @@ zh_CN:
       view_chat_tooltip: "返回原先的频道"
       select_topic: "选择另一个聊天频道"
       nav_title: "聊天室"
+      nav_title_paren: "聊天室（{{unread}}）"
       is_typing: "正在输入……"
       post_deleted_by: "{{username}} 删除了一条消息"
 

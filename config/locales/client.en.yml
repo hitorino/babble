@@ -18,6 +18,7 @@ en:
       post_edited: (edited)
       is_typing: "is typing..."
       nav_title: "Chat"
+      nav_title_paren: "Chat ({{unread}})"
       load_more: "Load more"
       loading_messages: "Loading messages..."
       no_more_messages: "That's all there is!"
