@@ -24,9 +24,9 @@ let applyBrowserHacks = function(topic) {
   const android_version = getAndroidVersion();
   function fix_babble_chat_size ($menu_panel) {
     let sub = (chrome_version && chrome_version >= 56 && android_version)?-55:0
-    $menu_panel.find(".babble-chat").css("height","100%");
+    $menu_panel.find(".babble-list").css("height","100%");
     let size = $menu_panel.find(".babble-chat").height();
-    $menu_panel.find(".babble-chat").css("height",size+sub+"px");
+    $menu_panel.find(".babble-list").css("height",size+sub+"px");
   }
 
   function getChromeVersion () {
