@@ -44,7 +44,7 @@ export default Ember.Object.create({
         setupScrollContainer(topic)
         setupPresence(topic)
         setupComposer(topic)
-        scrollToPost(topic, topic.last_read_post_number, 0)
+        scrollToPost(topic, topic.highest_post_number, 0)
         applyBrowserHacks(topic)
       }
       rerender(topic)
