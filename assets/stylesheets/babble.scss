@@ -330,7 +330,8 @@ li.babble-post .babble-post-content a.mention {
   padding: 10px 24px 10px 10px;
 }
 
-.babble-post-composer .emoji-button {
+.babble-post-composer .emoji-button,
+.babble-post-composer .upload-button {
   position: absolute;
   bottom: 2px;
   right: 2px;
@@ -340,6 +341,10 @@ li.babble-post .babble-post-content a.mention {
   display: inline-block;
   vertical-align: bottom;
   padding: 0;
+}
+
+.babble-post-composer .upload-button {
+  right: 24px;
 }
 
 .babble-post-composer .btn-cancel {
@@ -584,10 +589,16 @@ li.babble-chat.drop-container {
         vertical-align: middle;
       }
     }
-    .emoji-button {
+    .emoji-button,
+    .upload-button {
       bottom: 4px;
-      right: 8px;
       font-size: 18px;
+    }
+    .emoji-button {
+      right: 8px;
+    }
+    .upload-button {
+      right: 24px;
     }
   }
 }

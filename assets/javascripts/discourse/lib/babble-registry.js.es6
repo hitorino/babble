@@ -30,18 +30,5 @@ export default Ember.Object.create({
   topicForComponent(component) {
     let [topicId, x] = _.find(this._bindings, ([x, elementId]) => { return elementId == component.elementId }) || []
     return this._topics[topicId]
-  },
-
-  allUnreadCount: function() {
-    return _.values(this._topics).map((t) => t.get('unreadCount')>0?t.get('unreadCount'):0).reduce((sn,an) => sn+an,0)
-  }.property('_topics.@each.unreadCount'),
-
-  allAdditionalUnread: function() {
-    return _.values(this._topics).map((t) => t.get('hasAdditionalUnread')).reduce((sn,an) => sn || an,false)
-  }.property('_topics.@each.hasAdditionalUnread'),
-  
-  allVisibleUnreadCount: function() {
-    return this.get('allUnreadCount')<=0 ? '' : `${this.get('allUnreadCount')}${this.get('allAdditionalUnread') ? '+' : ''}`
-  }.property('allUnreadCount','allAdditionalUnread')
-
+  }
 })
