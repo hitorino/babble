@@ -5,9 +5,7 @@ import Category from 'discourse/models/category';
 import Topic from 'discourse/models/topic';
 import { ajax } from 'discourse/lib/ajax';
 
-export default Discourse.Route.extend({
-  site: Discourse.__container__.lookup('model:site'),
-  
+export default Discourse.Route.extend({  
   model(params) {
     let category = Category.findBySlug(params.category)
     this.set('nearPost', params.post_number)
@@ -16,7 +14,7 @@ export default Discourse.Route.extend({
     Category.reloadBySlug(params.category).then((response) => {
       const record = this.store.createRecord('category', response.category);
       record.setupGroupsAndPermissions();
-      this.site.updateCategory(record);
+      Discourse.__container__.lookup('model:site').updateCategory(record);
       return Category.findBySlug(params.category)
     })
   },
