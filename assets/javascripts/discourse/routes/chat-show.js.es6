@@ -6,7 +6,8 @@ import Topic from 'discourse/models/topic';
 import { ajax } from 'discourse/lib/ajax';
 
 export default Discourse.Route.extend({
-
+  site: Discourse.__container__.lookup('model:site'),
+  
   model(params) {
     let category = Category.findBySlug(params.category)
     this.set('nearPost', params.post_number)
