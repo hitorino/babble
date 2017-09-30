@@ -15,7 +15,7 @@ export function getPostContent (topic, postNumber) {
 //  const $pc = $(`li[data-post-number=${postNumber}] .babble-post-content`)
   return {
     username: post.get('username'), //$pc.find('.babble-post-name').text(),
-    content: post.get('raw')//$pc.find('.babble-post-cooked').text()
+    content: $(post.get('cooked')).text()//$pc.find('.babble-post-cooked').text()
   }
 }
 
