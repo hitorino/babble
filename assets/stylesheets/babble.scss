@@ -590,15 +590,19 @@ li.babble-chat.drop-container {
       }
     }
     .emoji-button,
-    .upload-button {
+    .upload-button,
+    .submit-button {
       bottom: 4px;
       font-size: 18px;
     }
+    .submit-button {
+      right: 8;
+    }
     .emoji-button {
-      right: 8px;
+      right: 24px;
     }
     .upload-button {
-      right: 24px;
+      right: 40px;
     }
   }
 }

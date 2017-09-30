@@ -17,6 +17,7 @@ export default Ember.Object.create({
     }, [this.textarea(),
         this.uploadButton(),
         this.emojiButton(),
+        this.submitButton(),
       h('form')])
   },
 
@@ -44,6 +45,14 @@ export default Ember.Object.create({
       className: 'upload-button',
       icon: 'upload',
       action: 'showUploadModal'
+    })
+  },
+
+  submitButton() {
+    return this.widget.attach('button', {
+      className: 'submit-button',
+      icon: 'reply',
+      action: 'submit'
     })
   },
 
