@@ -65,7 +65,7 @@ export default Ember.Object.create({
   },
 
   postName() {
-    return h('div.babble-post-name', this.widget.attach('poster-name', transformBasicPost(this.post)))
+    return h('div.babble-post-name', this.widget.attach('poster-name', this.post))
   },
 
   postDate() {
