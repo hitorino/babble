@@ -2,6 +2,22 @@ import { createWidget } from 'discourse/widgets/widget';
 import Babble from '../lib/babble'
 import template from '../widgets/templates/babble-post'
 import { ajax } from 'discourse/lib/ajax'
+import { scrollToPost } from '../lib/chat-element-utils'
+
+export function getPostContent (topic, postNumber) {
+  if (!postNumber) {
+    return {username: '', content: ''}
+  }
+  const post = topic.postStream.posts.findBy('post_number',postNumber)
+  if (!post) {
+    return {username: '', content: ''}
+  }
+//  const $pc = $(`li[data-post-number=${postNumber}] .babble-post-content`)
+  return {
+    username: post.get('username'), //$pc.find('.babble-post-name').text(),
+    content: post.get('raw')//$pc.find('.babble-post-cooked').text()
+  }
+}
 
 export default createWidget('babble-post', {
   tagName: 'li.babble-post',
@@ -37,6 +53,14 @@ export default createWidget('babble-post', {
 
   delete() {
     Babble.destroyPost(this.state.topic, this.state.post)
+  },
+
+  jumpToReply() {
+    scrollToPost(this.state.topic, this.state.post.get('reply_to_post_number'))
+  },
+
+  replyThis() {
+    this.appEvents.trigger('babble-composer:reply', this.state.post.get('post_number'));
   },
 
   html() { return template.render(this) }

@@ -18,7 +18,7 @@ export default Ember.Object.create({
 
   container() {
     let css = 'div.babble-post-container'
-    if (this.isFollowOn) { css += '.babble-follow-on' }
+    if (this.isFollowOn && !this.post.reply_to_post_number) { css += '.babble-follow-on' }
     return h(css, [this.daySeparator(), this.contents()])
   },
 
@@ -55,7 +55,7 @@ export default Ember.Object.create({
   },
 
   avatar() {
-    if (this.isFollowOn) {
+    if (this.isFollowOn && !this.post.reply_to_post_number) {
       return
     } else if (this.post.user_id) {
       return avatarImg('medium', {template: this.post.avatar_template, username: this.post.username})
@@ -78,12 +78,24 @@ export default Ember.Object.create({
   },
 
   postMetaData() {
-    if (this.isFollowOn) { return }
+    if (this.isFollowOn && !this.post.reply_to_post_number) { return }
     return h('div.babble-post-meta-data', [
       this.postName(),
       this.postDate(),
-      this.postEdited()
+      this.postEdited(),
+      this.postReply()
     ])
+  },
+
+  postReply() {
+    const rpn = this.post.get('reply_to_post_number')
+    if (rpn) {
+      return this.widget.attach('link', {
+        className: 'reply-jump-link',
+        icon: 'reply',
+        action: 'jumpToReply'
+      })
+    }
   },
 
   bodyWrapper(staged) {
@@ -114,7 +126,7 @@ export default Ember.Object.create({
   },
 
   actions() {
-    let actions = []
+    let actions = [this.widget.attach('link', { icon: 'reply', action: 'replyThis'})]
     if (this.post.can_delete) { actions.push(this.widget.attach('link', { icon: 'trash-o', action: 'delete'})) }
     if (this.post.can_edit)   { actions.push(this.widget.attach('link', { icon: 'pencil', action: 'edit'})) }
     if (this.post.deleted_at || !actions.length) { return }

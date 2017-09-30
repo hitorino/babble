@@ -16,7 +16,8 @@ class ::Babble::PostSerializer < ActiveModel::Serializer
              :deleted_at,
              :deleted_by_username,
              :yours,
-             :self_edits
+             :self_edits,
+             :reply_to_post_number
 
   def yours
     scope.user == object.user

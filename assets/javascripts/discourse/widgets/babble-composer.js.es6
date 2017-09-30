@@ -28,7 +28,8 @@ export default createWidget('babble-composer', {
       submitDisabled:  attrs.submitDisabled,
       post:            attrs.post,
       topic:           attrs.topic,
-      raw:             attrs.raw
+      raw:             attrs.raw,
+      replyTo:         null
     }
   },
 
@@ -97,6 +98,10 @@ export default createWidget('babble-composer', {
 
   },
 
+  closeReply() {
+    this.composerWrapper().find('div.babble-reply-to-wrapper').css('display','none')
+  },
+
   showUploadModal() {
     const append_img = upload => {
       const val = this.composerElement().val()
@@ -142,11 +147,13 @@ export default createWidget('babble-composer', {
     } else {
       this.create(text)
     }
+
+    this.closeReply()
   },
 
   create(text) {
     this.state.submitDisabled = true
-    Babble.createPost(this.state.topic, text).finally(() => {
+    Babble.createPost(this.state.topic, text, this.state.replyTo).finally(() => {
       this.state.submitDisabled = undefined
       Ember.run.scheduleOnce('afterRender', () => { this.composerElement().focus() })
     })
@@ -193,5 +200,11 @@ export default createWidget('babble-composer', {
     ajax(`/babble/topics/${this.state.topic.id}/typing`, { type: 'POST' })
   }, 1000),
 
-  html() { return template.render(this) }
+  html() {
+    this.appEvents.on('babble-composer:reply', (postNumber)=>{
+      this.state.replyTo = postNumber
+      $('.babble-chat > div.babble-post-composer div.babble-reply-to-wrapper').css('display','block')
+    })
+    return template.render(this)
+  }
 })

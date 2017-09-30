@@ -93,11 +93,13 @@ export default Ember.Object.create({
     return topic
   },
 
-  createPost(topic, text) {
+  createPost(topic, text, reply_to = null) {
     this.stagePost(topic, text)
+    const data = { raw: text };
+    if (reply_to) data.reply_to_post_number = reply_to;
     return ajax(`/babble/topics/${topic.id}/posts`, {
       type: 'POST',
-      data: { raw: text }
+      data: data
     }).then((data) => {
       this.handleNewPost(topic, data)
     })

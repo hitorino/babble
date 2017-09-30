@@ -306,7 +306,9 @@ li.babble-post .babble-post-content a.mention {
   margin: 0 6px 4px;
   text-align: center;
 }
-
+.babble-post-composer .babble-reply-to-wrapper span {
+  margin-left: 5px;
+}
 .babble-composer-wrapper {
   position: relative;
 }

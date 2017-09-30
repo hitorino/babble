@@ -3,7 +3,6 @@ import { on, observes }  from 'ember-addons/ember-computed-decorators'
 export default EmojiPicker.extend({
     @on('didInsertElement')
     addOpenEvent() {
-      console.log('start')
       this.$picker = this.$(".emoji-picker");
       this.$modal = this.$(".emoji-picker-modal");
       this.$modal.on("click", () => {

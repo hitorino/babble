@@ -1,9 +1,12 @@
 import { h } from 'virtual-dom'
+import { getPostContent } from '../babble-post'
+
 
 export default Ember.Object.create({
   render(widget) {
     this.widget = widget
     this.state  = widget.state
+    
     if (Discourse.User.current()) {
       return this.composer()
     } else {
@@ -14,11 +17,27 @@ export default Ember.Object.create({
   composer() {
     return h('div.babble-composer-wrapper', {
       className: 'wmd-controls'
-    }, [this.textarea(),
+    }, [this.replyTo(),
+        this.textarea(),
         this.uploadButton(),
         this.emojiButton(),
         this.submitButton(),
       h('form')])
+  },
+
+  replyTo() {
+    const postContent = getPostContent(this.state.topic, this.state.replyTo)
+    return h('div.babble-reply-to-wrapper', {
+      style: 'display: none;'
+    }, [
+      h('span.babble-post-name', ['@'+postContent.username]),
+      h('span', [postContent.content]),
+      this.widget.attach('button', {
+        className: 'close-reply-button',
+        icon: 'window-close',
+        action: 'closeReply'
+      })
+    ])
   },
 
   textarea() {

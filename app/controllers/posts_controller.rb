@@ -66,7 +66,8 @@ class ::Babble::PostsController < ::ApplicationController
     {
       topic_id:         params[:topic_id],
       raw:              params[:raw],
-      skip_validations: true
+      skip_validations: true,
+      reply_to_post_number: params[:reply_to_post_number]
     }
   end
 
