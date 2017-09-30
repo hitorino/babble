@@ -611,6 +611,7 @@ li.babble-chat.drop-container {
   }
 }
 
+/* In post reply */
 .babble-post-reply-to {
   overflow: hidden;
   display: -webkit-flex;
@@ -632,4 +633,12 @@ li.babble-chat.drop-container {
 }
 .babble-reply-quote-username::before {
   content: '@';
+}
+
+/* In composer reply */
+.babble-post-composer .babble-reply-to-wrapper {
+  text-align: left;
+}
+.babble-post-composer .babble-reply-to-wrapper span {
+  margin-right: 5px;
 }
