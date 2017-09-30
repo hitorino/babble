@@ -100,6 +100,7 @@ export default createWidget('babble-composer', {
 
   closeReply() {
     this.composerWrapper().find('div.babble-reply-to-wrapper').css('display','none')
+    this.state.replyTo = null
   },
 
   showUploadModal() {

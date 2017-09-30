@@ -5,6 +5,7 @@ import { dateNode } from 'discourse/helpers/node';
 import { avatarImg } from 'discourse/widgets/post'
 import { emojiUnescape } from 'discourse/lib/text'
 import { transformBasicPost } from 'discourse/lib/transform-post'
+import { getPostContent } from '../babble-post'
 
 export default Ember.Object.create({
   render(widget) {
@@ -90,11 +91,16 @@ export default Ember.Object.create({
   postReply() {
     const rpn = this.post.get('reply_to_post_number')
     if (rpn) {
-      return this.widget.attach('link', {
-        className: 'reply-jump-link',
-        icon: 'reply',
-        action: 'jumpToReply'
-      })
+      const pc = getPostContent(this.topic, rpn)
+      return h('div.babble-post-reply-to',[
+        this.widget.attach('link', {
+          className: 'reply-jump-link',
+          icon: 'reply',
+          action: 'jumpToReply'
+        }),
+        h('span.babble-reply-quote-username',pc.username),
+        h('span.babble-reply-quote-content',pc.content)
+      ])
     }
   },
 
