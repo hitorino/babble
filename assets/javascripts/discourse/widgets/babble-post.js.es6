@@ -9,12 +9,14 @@ $.fn.longPress = function(fn) {
   var timeout = undefined;
   var $this = this;
   for(var i = 0;i<$this.length;i++){
-      $this[i].addEventListener('touchstart', function(event) {
-          timeout = setTimeout(fn, 800);  //长按时间超过800ms，则执行传入的方法
-          }, false);
-      $this[i].addEventListener('touchend', function(event) {
-          clearTimeout(timeout);  //长按时间少于800ms，不会执行传入的方法
-          }, false);
+    $this[i].addEventListener('touchstart', function(event) {
+      timeout = setTimeout(fn, 800);  //长按时间超过800ms，则执行传入的方法
+      retrun false
+    }, false);
+    $this[i].addEventListener('touchend', function(event) {
+      clearTimeout(timeout);  //长按时间少于800ms，不会执行传入的方法
+      return false;
+    }, false);
   }
 }
 
@@ -89,8 +91,12 @@ export default createWidget('babble-post', {
 
   html() {
     const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
-    $sel.longPress(()=>this.showActions())
-    $sel.dblclick(()=>this.showActions())
+    $sel.longPress(()=>{
+      this.showActions()
+    })
+    $sel.dblclick(()=>{
+      this.showActions()
+    })
     return template.render(this)
   }
 })

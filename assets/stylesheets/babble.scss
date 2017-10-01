@@ -644,7 +644,7 @@ li.babble-chat.drop-container {
 }
 
 /* Post Actions Menu */
-.babble-post-actions a:after {
+.babble-post-actions > p > a:after {
   content: ': '
 }
 
