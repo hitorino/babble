@@ -3,6 +3,20 @@ import Babble from '../lib/babble'
 import template from '../widgets/templates/babble-post'
 import { ajax } from 'discourse/lib/ajax'
 import { scrollToPost } from '../lib/chat-element-utils'
+import showModal from 'discourse/lib/show-modal'
+
+$.fn.longPress = function(fn) {
+  var timeout = undefined;
+  var $this = this;
+  for(var i = 0;i<$this.length;i++){
+      $this[i].addEventListener('touchstart', function(event) {
+          timeout = setTimeout(fn, 800);  //长按时间超过800ms，则执行传入的方法
+          }, false);
+      $this[i].addEventListener('touchend', function(event) {
+          clearTimeout(timeout);  //长按时间少于800ms，不会执行传入的方法
+          }, false);
+  }
+}
 
 export function getPostContent (topic, postNumber) {
   if (!postNumber) {
@@ -47,6 +61,16 @@ export default createWidget('babble-post', {
     }
   },
 
+  showActions () {
+    let post = this.state.post
+    showModal('babblePostActions').setProperties({
+      post_name: post.get('username'),
+      post_quote: $(post.get('cooked')).text(),
+      topic: this.state.topic,
+      post: post
+    })
+  },
+
   edit() {
     Babble.editPost(this.state.topic, this.state.post)
   },
@@ -63,5 +87,10 @@ export default createWidget('babble-post', {
     this.appEvents.trigger('babble-composer:reply', this.state.post.get('post_number'));
   },
 
-  html() { return template.render(this) }
+  html() {
+    const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
+    $sel.longPress(()=>this.showActions())
+    $sel.dblclick(()=>this.showActions())
+    return template.render(this)
+  }
 })

@@ -642,3 +642,31 @@ li.babble-chat.drop-container {
 .babble-post-composer .babble-reply-to-wrapper span {
   margin-right: 5px;
 }
+
+/* Post Actions Menu */
+.babble-post-actions a:after {
+  content: ': '
+}
+
+.babble-post-actions {
+  text-align: center;
+  ul, li, li > a {
+    width: 100%;
+  }
+  ul {
+    list-style-type: none;
+    margin: 0;
+  }
+  li > a {
+    padding: 5px;
+    display: block;
+    &:hover {
+      background-color: #e9e9e9;
+    }
+  }
+  p {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+}

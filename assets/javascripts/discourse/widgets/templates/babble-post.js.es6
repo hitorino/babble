@@ -115,7 +115,7 @@ export default Ember.Object.create({
     if (staged) {
       return [this.cooked(), this.loadingSpinner()]
     } else {
-      return [this.cooked(), this.unreadLine(), this.actions()]
+      return [this.cooked(), this.unreadLine()]
     }
   },
 
@@ -129,14 +129,6 @@ export default Ember.Object.create({
       h('div.babble-last-read-post-message', I18n.t('babble.new_messages')),
       h('hr.babble-last-read-post-line')
     ])
-  },
-
-  actions() {
-    let actions = [this.widget.attach('link', { icon: 'reply', action: 'replyThis'})]
-    if (this.post.can_delete) { actions.push(this.widget.attach('link', { icon: 'trash-o', action: 'delete'})) }
-    if (this.post.can_edit)   { actions.push(this.widget.attach('link', { icon: 'pencil', action: 'edit'})) }
-    if (this.post.deleted_at || !actions.length) { return }
-    return h('div.babble-post-actions', actions)
   },
 
   loadingSpinner() {

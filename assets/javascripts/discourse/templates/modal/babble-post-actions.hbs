@@ -1,0 +1,11 @@
+{{#d-modal-body title='babble.message' class="babble-post-actions"}}
+<p>
+    <a href={{post_user_url}}>{{post_name}}</a>
+    {{post_quote}}
+</p>
+<ul>
+    <li><a {{action 'reply'}}>{{i18n 'babble.reply'}}</a></li>
+    <li><a {{action 'edit'}}>{{i18n 'babble.edit'}}</a></li>
+    <li><a {{action 'delete'}}>{{i18n 'babble.delete'}}</a></li>
+</ul>
+{{/d-modal-body}}

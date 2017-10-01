@@ -16,6 +16,10 @@ zh_CN:
       is_typing: "正在输入……"
       post_deleted_by: "{{username}} 删除了一条消息"
 
+      reply: "回复"
+      edit: "编辑"
+      delete: "删除"
+      message: "消息"
 
       save: "保存"
       cancel: "取消"

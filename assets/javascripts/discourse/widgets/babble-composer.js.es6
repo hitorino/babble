@@ -205,6 +205,7 @@ export default createWidget('babble-composer', {
     this.appEvents.on('babble-composer:reply', (postNumber)=>{
       this.state.replyTo = postNumber
       $('.babble-chat > div.babble-post-composer div.babble-reply-to-wrapper').css('display','block')
+      this.scheduleRerender()
     })
     return template.render(this)
   }

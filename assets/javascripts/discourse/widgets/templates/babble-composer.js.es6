@@ -28,7 +28,9 @@ export default Ember.Object.create({
   replyTo() {
     const postContent = getPostContent(this.state.topic, this.state.replyTo)
     return h('div.babble-reply-to-wrapper', {
-      style: 'display: none;'
+      style: {
+        display: 'none'
+      }
     }, [
       h('span.babble-post-name', ['@'+postContent.username]),
       h('span', [postContent.content]),
