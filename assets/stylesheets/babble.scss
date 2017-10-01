@@ -304,7 +304,7 @@ li.babble-post .babble-post-content a.mention {
 
 .babble-post-composer {
   margin: 0 6px 4px;
-  text-align: center;
+  text-align: /*center*/left;
 }
 
 .babble-composer-wrapper {
@@ -325,7 +325,9 @@ li.babble-post .babble-post-content a.mention {
   box-sizing: border-box;
   margin: 5px 2px 0 0;
   resize: none;
-  width: 100%;
+  width: -moz-calc(100% - 78px);
+  width: -webkit-calc(100% - 78px);
+  width: calc(100% - 78px);
   min-height: 30px;
   padding: 10px 24px 10px 10px;
 }
@@ -438,6 +440,8 @@ li.babble-post .babble-post-content a.mention {
 
   .slide-in { // styles for slide-in menu
     box-sizing: border-box;
+    height: -moz-calc(100vh - 64px) !important;
+    height: -webkit-calc(100vh - 64px) !important;
     height: calc(100vh - 64px) !important;
     @media (max-width: 450px) { width: 100% !important; }
   }
@@ -644,10 +648,6 @@ li.babble-chat.drop-container {
 }
 
 /* Post Actions Menu */
-.babble-post-actions > p > a:after {
-  content: ': '
-}
-
 .babble-post-actions {
   text-align: center;
   ul, li, li > a {
@@ -665,8 +665,24 @@ li.babble-chat.drop-container {
     }
   }
   p {
+    a:after {
+      content: ': '
+    }
     max-width: 100%;
     margin: 0 auto;
+    overflow: hidden;
+    word-break: break-all;
+    max-height: 60px;
+    position: relative;
+    &:after {
+      content: ' ';
+      width: 20px;
+      height: 20px;
+      background-image: linear-gradient(to right, transparent, white);
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      padding-left: 40px;
+    }
   }
-
 }

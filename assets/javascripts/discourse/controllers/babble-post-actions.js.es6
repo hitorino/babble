@@ -21,6 +21,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
     },
     edit() {
       Babble.editPost(this.get('topic'), this.get('post'))
+      this.appEvents.trigger('babble-post:edited', this.get('post').get('post_number'))
       this.send('closeModal')
     },
     delete() {
