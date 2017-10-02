@@ -12,6 +12,14 @@ import { rerender } from '../lib/chat-component-utils'
 import { setupLiveUpdate, teardownLiveUpdate } from '../lib/chat-live-update-utils'
 import BabbleRegistry from '../lib/babble-registry'
 
+export function postPlainify(post) {
+  return $(post.cooked).text()
+}
+
+export function postIsMine(post) {
+  return Discourse.User.current() && post.user_id === Discourse.User.current().id
+}
+
 export default Ember.Object.create({
 
   disabled() {
@@ -93,10 +101,26 @@ export default Ember.Object.create({
     return topic
   },
 
-  createPost(topic, text, reply_to = null) {
+  _make_reply_to_post_number(replyingPostNumber, post) {
+    if (replyingPostNumber != undefined) {
+      return {
+        reply_to_post_number: replyingPostNumber
+      }
+    } else if (post.get('reply_to_post_number')) {
+      return {
+        reply_to_post_number: post.get('reply_to_post_number')
+      }
+    } else {
+      return {}
+    }
+  },
+
+  createPost(topic, text) {
     this.stagePost(topic, text)
-    const data = { raw: text };
-    if (reply_to) data.reply_to_post_number = reply_to;
+    const data = {
+      raw: text,
+      reply_to_post_number: topic.get('replyingPostNumber')
+    }
     return ajax(`/babble/topics/${topic.id}/posts`, {
       type: 'POST',
       data: data
@@ -107,11 +131,18 @@ export default Ember.Object.create({
 
   editPost(topic, post) {
     if (post) {
-      topic.set('editingPostId', post.id)
-      scrollToPost(topic, post.post_number)
-      setupComposer(topic)
+      topic.set('editingPostId', post.get('id'))
     } else {
       topic.set('editingPostId', null)
+    }
+  },
+
+  replyPost(topic, post) {
+    if (post) {
+      topic.set('editingPostId', null)
+      topic.set('replyingPostNumber', post.get('post_number'))
+    } else {
+      topic.set('replyingPostNumber', null)
     }
   },
 
@@ -119,8 +150,8 @@ export default Ember.Object.create({
     this.editPost(topic, null)
     topic.set('loadingEditId', post.id)
     return ajax(`/babble/topics/${post.topic_id}/posts/${post.id}`, {
-      type: 'POST',
-      data: { raw: text }
+      type: 'PUT',
+      data: { 'raw': text }
     }).then((data) => {
       this.handleNewPost(topic, data)
     }).finally(() => {

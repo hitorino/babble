@@ -1,11 +1,12 @@
 import { h } from 'virtual-dom'
 import { getPostContent } from '../babble-post'
+import { postPlainify, postIsMine } from '../../lib/babble'
 
 
 export default Ember.Object.create({
   render(widget) {
     this.widget = widget
-    this.state  = widget.state
+    this.state  = widget.get('state')
     
     if (Discourse.User.current()) {
       return this.composer()
@@ -17,20 +18,39 @@ export default Ember.Object.create({
   composer() {
     return h('div.babble-composer-wrapper', {
       className: 'wmd-controls'
-    }, [this.replyTo(),
-        this.textarea(),
-        this.uploadButton(),
-        this.emojiButton(),
-        this.submitButton(),
-      h('form')])
+    }, [
+      this.editHint(),
+      this.replyHint(),
+      this.textarea(),
+      this.uploadButton(),
+      this.emojiButton(),
+      this.submitButton(),
+      h('form')
+    ])
   },
 
-  replyTo() {
-    const postContent = getPostContent(this.state.topic, this.state.replyTo)
-    return h('div.babble-reply-to-wrapper', {
-      style: {
-        display: 'none'
-      }
+  editHint() {
+    const post = this.widget.get('post')
+    if (!post) { return }
+    const title = I18n.t('babble.edit')+(postIsMine(post)?'':' @'+post.username)
+    return h('div.babble-composer-hint.babble-edit-hint-wrapper', {
+      style: (this.widget.get('hintType').type !== 'edit'?{display: 'none'}:{display:'block'})
+    }, [
+      h('span.babble-post-name', [title]),
+      h('span', [postPlainify(post)]),
+      this.widget.attach('button', {
+        className: 'close-edit-button',
+        icon: 'window-close',
+        action: 'cancel'
+      })
+    ])
+  },
+
+  replyHint() {
+    const topic = this.widget.get('state.topic')
+    const postContent = getPostContent(topic, topic.get('replyingPostNumber'))
+    return h('div.babble-composer-hint.babble-reply-to-wrapper', {
+      style: (this.widget.get('hintType').type !== 'reply'?{display: 'none'}:{display:'block'})
     }, [
       h('span.babble-post-name', ['@'+postContent.username]),
       h('span', [postContent.content]),
@@ -50,7 +70,7 @@ export default Ember.Object.create({
         rows:        1,
         disabled:    this.state.submitDisabled
       }
-    }, this.state.raw)
+    }, this.widget.get('post.raw'))
   },
 
   emojiButton() {

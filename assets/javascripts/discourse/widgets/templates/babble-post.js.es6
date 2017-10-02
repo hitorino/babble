@@ -26,10 +26,10 @@ export default Ember.Object.create({
   daySeparator() {
     if (!this.isNewDay) { return }
     let date = moment(this.post.created_at)
-                     .startOf('day')
-                     .calendar({ lastWeek: 'dddd' })
-                     .replace('at 12:00 AM', '')
-                     .replace('00:00', '')
+      .startOf('day')
+      .calendar({ lastWeek: 'dddd' })
+      .replace('at 12:00 AM', '')
+      .replace('00:00', '')
     return h('div.babble-post-new-day', h('div.babble-post-new-day-message', date))
   },
 
@@ -38,12 +38,6 @@ export default Ember.Object.create({
       return h('div.babble-staged-post.babble-deleted-post', [this.avatarWrapper(), I18n.t('babble.post_deleted_by', {username: this.post.deleted_by_username})])
     } else if (this.post.user_deleted) {
       return h('div.babble-staged-post.babble-deleted-post', [this.avatarWrapper(), this.bodyWrapper()] )
-    } else if (this.topic.get('editingPostId') === this.post.id ){
-      return this.widget.attach('babble-composer', {
-        post:      this.post,
-        topic:     this.topic,
-        isEditing: true,
-        raw:       this.post.raw})
     } else if (this.topic.get('loadingEditId') === this.post.id || this.post.id == -1) {
       return h('div.babble-staged-post', [this.avatarWrapper(), this.bodyWrapper(true)])
     } else {

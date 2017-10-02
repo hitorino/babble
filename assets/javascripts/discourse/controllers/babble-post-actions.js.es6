@@ -16,12 +16,13 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   actions: {
     reply() {
-      this.appEvents.trigger('babble-composer:reply', this.get('post').get('post_number'))
+      Babble.replyPost(this.get('topic'), this.get('post'))
+      this.appEvents.trigger('babble-composer:rerender')
       this.send('closeModal')
     },
     edit() {
       Babble.editPost(this.get('topic'), this.get('post'))
-      this.appEvents.trigger('babble-post:edited', this.get('post').get('post_number'))
+      this.appEvents.trigger('babble-composer:rerender')
       this.send('closeModal')
     },
     delete() {

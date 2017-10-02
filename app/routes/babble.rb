@@ -12,6 +12,6 @@ Babble::Engine.routes.draw do
 
   get    "/topics/:topic_id/posts/:post_number/:order" => "posts#index"
   post   "/topics/:topic_id/posts"                     => "posts#create"
-  post   "/topics/:topic_id/posts/:id"                 => "posts#update"
+  put    "/topics/:topic_id/posts/:id"                 => "posts#update"
   delete "/topics/:topic_id/posts/:id"                 => "posts#destroy"
 end

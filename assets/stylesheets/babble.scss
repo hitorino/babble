@@ -639,11 +639,11 @@ li.babble-chat.drop-container {
   content: '@';
 }
 
-/* In composer reply */
-.babble-post-composer .babble-reply-to-wrapper {
+/* In composer hints */
+.babble-post-composer .babble-composer-hint {
   text-align: left;
 }
-.babble-post-composer .babble-reply-to-wrapper span {
+.babble-post-composer .babble-composer-hint span {
   margin-right: 5px;
 }
 

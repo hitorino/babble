@@ -3,13 +3,17 @@ import Babble from "../lib/babble"
 import template from "../widgets/templates/babble-composer"
 import { ajax } from 'discourse/lib/ajax'
 import showModal from 'discourse/lib/show-modal'
-import { getUploadMarkdown,
-         validateUploadedFiles,
-         displayErrorForUpload } from 'discourse/lib/utilities'
+import {
+  getUploadMarkdown,
+  validateUploadedFiles,
+  displayErrorForUpload
+} from 'discourse/lib/utilities'
 import { cacheShortUploadUrl } from 'pretty-text/image-short-url'
 import Session from "discourse/models/session"
+import { observes } from 'ember-addons/ember-computed-decorators'
 
-export default createWidget('babble-composer', {
+// Do deep copy to make `createWidget` happy.
+export default createWidget('babble-composer', jQuery.extend(true, {
   tagName: 'div.babble-post-composer',
   classNames: ['wmd-controls'],
 
@@ -18,27 +22,58 @@ export default createWidget('babble-composer', {
   _xhr: null,
   session: Session.current(),
 
+
   buildKey(attrs) {
     return `babble-composer-${attrs.topic.id}`
   },
 
   defaultState(attrs) {
     return {
-      editing:         attrs.isEditing,
       submitDisabled:  attrs.submitDisabled,
-      post:            attrs.post,
-      topic:           attrs.topic,
-      raw:             attrs.raw,
-      replyTo:         null
+      topic:           attrs.topic
     }
   },
 
-  postComposer() {
-    if (this.state.editing) {
-      return $('.babble-post-container > .babble-post-composer')
+  editingId: function() {
+    return this.get('state.topic.editingPostId')
+  }.property('state.topic.editingPostId'),
+  editing: function() {
+    return !!this.get('editingId')
+  }.property('editingId'),
+
+  replyingPN: function() {
+    return this.get('state.topic.replyingPostNumber')
+  }.property('state.topic.replyingPostNumber'),
+  replying: function() {
+    return !!this.get('replyingPN')
+  }.property('replyingPN'),
+
+  post: function() {
+    return this.get('state.topic.postStream.posts').findBy('id', this.get('editingId'))
+  }.property('editingId'),
+
+  hintType: function() {
+    if (this.get('editing')) {
+      return {
+        type:'edit',
+        id: this.get('editingId')
+      }
+    } else if (this.get('replying')) {
+      return {
+        type:'reply',
+        postNumber: this.get('replyingPN')
+      }
     } else {
-      return $('.babble-chat > .babble-post-composer')
+      return { type:'none' }
     }
+  }.property('replyingPN', 'editingId'),
+
+  rerender() {
+    this.scheduleRerender()
+  },
+
+  postComposer() {
+    return $('.babble-chat > .babble-post-composer')
   },
 
   composerElement() {
@@ -50,57 +85,52 @@ export default createWidget('babble-composer', {
   },
 
   selectEmoji() {
-    this.appEvents.trigger("babble-emoji-picker:open");
+    this.appEvents.trigger("babble-emoji-picker:open")
   },
 
   _unbindUploadTarget() {
-    $(".mobile-file-upload").off("click.uploader");
-    this.messageBus.unsubscribe("/uploads/composer");
-    const $uploadTarget = this.composerWrapper();
-    try { $uploadTarget.fileupload("destroy"); }
+    $(".mobile-file-upload").off("click.uploader")
+    this.messageBus.unsubscribe("/uploads/composer")
+    const $uploadTarget = this.composerWrapper()
+    try { $uploadTarget.fileupload("destroy") }
     catch (e) { /* wasn't initialized yet */ }
-    $uploadTarget.off();
+    $uploadTarget.off()
   },
 
   _bindUploadTarget() {
-    this._unbindUploadTarget(); // in case it's still bound, let's clean it up first
+    this._unbindUploadTarget() // in case it's still bound, let's clean it up first
 
-    const $element = this.composerWrapper();
-    const csrf = this.session.get('csrfToken');
+    const $element = this.composerWrapper()
+    const csrf = this.session.get('csrfToken')
 
     $element.fileupload({
       url: Discourse.getURL(`/uploads.json?client_id=${this.messageBus.clientId}&authenticity_token=${encodeURIComponent(csrf)}`),
       dataType: "json",
       pasteZone: $element,
-    });
+    })
 
     $element.on('fileuploadsubmit', (e, data) => {
-      data.formData = { type: "composer" };
-      const isUploading = validateUploadedFiles(data.files);
+      data.formData = { type: "composer" }
+      const isUploading = validateUploadedFiles(data.files)
       this.uploadProgress = 0
       this.isUploading = isUploading
-      return isUploading;
-    });
+      return isUploading
+    })
 
     $element.on("fileuploadprogressall", (e, data) => {
-      this.uploadProgress = (parseInt(data.loaded / data.total * 100, 10));
-    });
+      this.uploadProgress = (parseInt(data.loaded / data.total * 100, 10))
+    })
 
     $element.on("fileuploadfail", (e, data) => {
 
-      const userCancelled = this._xhr && this._xhr._userCancelled;
-      this._xhr = null;
+      const userCancelled = this._xhr && this._xhr._userCancelled
+      this._xhr = null
 
       if (!userCancelled) {
-        displayErrorForUpload(data);
+        displayErrorForUpload(data)
       }
     })
 
-  },
-
-  closeReply() {
-    this.composerWrapper().find('div.babble-reply-to-wrapper').css('display','none')
-    this.state.replyTo = null
   },
 
   showUploadModal() {
@@ -133,17 +163,29 @@ export default createWidget('babble-composer', {
     })
   },
 
+
+  closeHint() {
+    this.rerender()
+    //this.composerWrapper().find('div.babble-composer-hint').css('display','none')
+  },
+
+  closeReply() {
+    Babble.replyPost(this.get('state.topic'), null)
+    this.closeHint()
+  },
+
   cancel() {
-    Babble.editPost(this.state.topic, null)
+    Babble.editPost(this.get('state.topic'), null)
+    this.closeReply()
   },
 
   submit() {
-    let $composer = this.composerElement(),
-        text = $composer.val();
+    const $composer = this.composerElement()
+    const text = $composer.val()
     $composer.val('')
-    if (!text) { return; }
+    if (!text) { return }
 
-    if (this.state.editing) {
+    if (this.get('editing')) {
       this.update(text)
     } else {
       this.create(text)
@@ -153,17 +195,18 @@ export default createWidget('babble-composer', {
   },
 
   create(text) {
-    this.state.submitDisabled = true
-    Babble.createPost(this.state.topic, text, this.state.replyTo).finally(() => {
-      this.state.submitDisabled = undefined
+    this.set('state.submitDisabled', true)
+    Babble.createPost(this.get('state.topic'), text).finally(() => {
+      this.set('state.submitDisabled', undefined)
       Ember.run.scheduleOnce('afterRender', () => { this.composerElement().focus() })
     })
   },
 
   update(text) {
-    if (this.state.post.raw.trim() == text.trim()) { return }
-    Babble.updatePost(this.state.topic, this.state.post, text).finally(() => {
-      this.state.submitDisabled = undefined
+    if (this.get('post').raw.trim() == text.trim()) { return }
+    this.set('state.submitDisabled', true)
+    Babble.updatePost(this.state.topic, this.get('post'), text).finally(() => {
+      this.set('state.submitDisabled', undefined)
     })
   },
 
@@ -181,9 +224,9 @@ export default createWidget('babble-composer', {
   },
 
   keyUp(event) {
-    if (this.state.showError) { this.state.showError = false }
+    if (this.state.showError) { this.set('state.showError', false) }
     if (event.keyCode == 38 &&                               // key pressed is up key
-        !this.state.editing &&                               // post is not being edited
+        !this.get('editing') &&                               // post is not being edited
         !$(event.target).siblings('.autocomplete').length) { // autocomplete is not active
       let myLastPost = _.last(_.select(this.state.topic.postStream.posts, function(post) {
         return post.user_id == Discourse.User.current().id
@@ -202,11 +245,8 @@ export default createWidget('babble-composer', {
   }, 1000),
 
   html() {
-    this.appEvents.on('babble-composer:reply', (postNumber)=>{
-      this.state.replyTo = postNumber
-      $('.babble-chat > div.babble-post-composer div.babble-reply-to-wrapper').css('display','block')
-      this.scheduleRerender()
-    })
+    this.appEvents.off('babble-composer:rerender')
+    this.appEvents.on('babble-composer:rerender', ()=>this.rerender())
     return template.render(this)
   }
-})
+}, Ember.Object.prototype))
