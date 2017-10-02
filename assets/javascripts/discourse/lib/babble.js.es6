@@ -224,7 +224,7 @@ export default Ember.Object.create({
     return ajax(`/babble/topics/${topic.id}/posts/${postNumber}/${order}`).then((data) => {
       data.posts.map(function(post) { topic.postStream.appendPost(Post.create(post)) })
       syncWithPostStream(topic)
-      scrollToPost(topic, topic.get(starterPostField))
+      scrollToPost(topic, latestPostFor(topic))
     }).finally(() => {
       topic.set('loadingPosts', null)
     })
