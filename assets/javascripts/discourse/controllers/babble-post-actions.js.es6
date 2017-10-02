@@ -1,7 +1,9 @@
 import ModalFunctionality from 'discourse/mixins/modal-functionality'
 import Babble from '../lib/babble'
 import computed from 'ember-addons/ember-computed-decorators'
+import { on } from 'ember-addons/ember-computed-decorators';
 import { userPath } from 'discourse/lib/url'
+
 
 export default Ember.Controller.extend(ModalFunctionality, {
   topic: null,
@@ -12,6 +14,10 @@ export default Ember.Controller.extend(ModalFunctionality, {
   @computed('post_name')
   post_user_url(post_name) {
     return userPath(post_name)
+  },
+
+  onShow() {
+    $('#discourse-modal').addClass('babble-post-actions-modal')
   },
 
   actions: {
@@ -28,6 +34,10 @@ export default Ember.Controller.extend(ModalFunctionality, {
     delete() {
       Babble.destroyPost(this.get('topic'), this.get('post'))
       this.send('closeModal')
+    }.
+    closeModal() {
+      $('#discourse-modal').removeClass('babble-post-actions-modal')
+      this._super(...arguments)
     }
   }
 })
