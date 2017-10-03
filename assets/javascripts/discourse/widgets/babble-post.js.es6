@@ -34,18 +34,18 @@ $.fn.longPress = function(length, fn, fnRelease) {
       start[i] = event.touches[0]
       timeout = setTimeout(fn, length) // If press longer than 2000ms, the fn will not be called
       return false
-    }, false)
+    }, true)
     this[i].addEventListener('touchmove', (event) => {
       if (start[i] && moveDistance(event.touches[0], start[i]) > 200) {
         if (preventExecution($(this[i]))) {
           onRelease(i)
         }
       }
-    }, false)
+    }, true)
     this[i].addEventListener('touchend', () => {
       onRelease(i)
       return false
-    }, false)
+    }, true)
   }
   return this
 }
