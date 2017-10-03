@@ -16,9 +16,6 @@ export function postPlainify(post) {
   return $(post.cooked).text()
 }
 
-export function postIsMine(post) {
-  return Discourse.User.current() && post.user_id === Discourse.User.current().id
-}
 
 export default Ember.Object.create({
 

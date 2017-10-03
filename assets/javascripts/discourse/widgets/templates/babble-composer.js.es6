@@ -1,6 +1,6 @@
 import { h } from 'virtual-dom'
 import { getPostContent } from '../babble-post'
-import { postPlainify, postIsMine } from '../../lib/babble'
+import { postPlainify } from '../../lib/babble'
 
 
 export default Ember.Object.create({
@@ -32,11 +32,10 @@ export default Ember.Object.create({
   editHint() {
     const post = this.widget.get('post')
     if (!post) { return }
-    const title = I18n.t('babble.edit')+(postIsMine(post)?'':' @'+post.username)
     return h('div.babble-composer-hint.babble-edit-hint-wrapper', {
       style: (this.widget.get('hintType').type !== 'edit'?{display: 'none'}:{display:'block'})
     }, [
-      h('span.babble-post-name', [title]),
+      h('span.babble-post-name', ['@'+post.username]),
       h('span', [postPlainify(post)]),
       this.widget.attach('button', {
         className: 'close-edit-button',

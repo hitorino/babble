@@ -3,6 +3,7 @@ import Babble from "../lib/babble"
 import template from "../widgets/templates/babble-composer"
 import { ajax } from 'discourse/lib/ajax'
 import showModal from 'discourse/lib/show-modal'
+import autosize from 'discourse/lib/autosize'
 import {
   getUploadMarkdown,
   validateUploadedFiles,
@@ -137,6 +138,7 @@ export default createWidget('babble-composer', jQuery.extend(true, {
     const append_img = upload => {
       const val = this.composerElement().val()
       this.composerElement().val(val + getUploadMarkdown(upload))
+      autosize.update(this.composerElement())
     }
     this._bindUploadTarget()
     showModal('uploadSelector').setProperties({
