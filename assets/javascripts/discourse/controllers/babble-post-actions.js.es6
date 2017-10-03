@@ -1,9 +1,8 @@
 import ModalFunctionality from 'discourse/mixins/modal-functionality'
 import Babble from '../lib/babble'
 import computed from 'ember-addons/ember-computed-decorators'
-import { on } from 'ember-addons/ember-computed-decorators';
 import { userPath } from 'discourse/lib/url'
-
+import DModal from 'discourse/components/d-modal'
 
 export default Ember.Controller.extend(ModalFunctionality, {
   topic: null,
@@ -13,6 +12,21 @@ export default Ember.Controller.extend(ModalFunctionality, {
   callbacks: {
     onShow: null,
     onDestroy: null
+  },
+
+  init() {
+    this._super(...arguments)
+    DModal.reopen({
+      actions: {
+        closeModal() {
+          this.appEvents.trigger('babble-dmodal:closed')
+          this._super(...arguments)
+        }
+      }
+    })
+    this.appEvents.on('babble-dmodal:closed',()=>{
+      this.onDestroy()
+    })
   },
 
   @computed('post_name')
@@ -25,6 +39,13 @@ export default Ember.Controller.extend(ModalFunctionality, {
     if (this.get('callbacks').onShow) {
       this.get('callbacks').onShow(this)
     }
+  },
+
+  onDestroy() {
+    if (this.get('callbacks').onDestroy) {
+      this.get('callbacks').onDestroy()
+    }
+    $('#discourse-modal').removeClass('babble-post-actions-modal')
   },
 
   actions: {
@@ -41,13 +62,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
     delete() {
       Babble.destroyPost(this.get('topic'), this.get('post'))
       this.send('closeModal')
-    },
-    closeModal() {
-      if (this.get('callbacks').onDestroy) {
-        this.get('callbacks').onDestroy()
-      }
-      $('#discourse-modal').removeClass('babble-post-actions-modal')
-      this._super(...arguments)
     }
   }
 })
