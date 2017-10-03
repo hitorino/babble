@@ -35,6 +35,7 @@ export default Ember.Object.create({
     return h('div.babble-composer-hint.babble-edit-hint-wrapper', {
       style: (this.widget.get('hintType').type !== 'edit'?{display: 'none'}:{display:'block'})
     }, [
+      h('span.babble-post-hint-type', I18n.t('babble.edit')),
       h('span.babble-post-name', ['@'+post.username]),
       h('span', [postPlainify(post)]),
       this.widget.attach('button', {
@@ -51,6 +52,7 @@ export default Ember.Object.create({
     return h('div.babble-composer-hint.babble-reply-to-wrapper', {
       style: (this.widget.get('hintType').type !== 'reply'?{display: 'none'}:{display:'block'})
     }, [
+      h('span.babble-post-hint-type', I18n.t('babble.reply')),
       h('span.babble-post-name', ['@'+postContent.username]),
       h('span', [postContent.content]),
       this.widget.attach('button', {
