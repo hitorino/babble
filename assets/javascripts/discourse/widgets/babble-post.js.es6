@@ -30,12 +30,20 @@ $.fn.longPress = function(length, fn, fnRelease) {
   }
   for(var i = 0;i<this.length;i++){
     this[i].addEventListener('touchstart', (event) => {
+      if (event.target.tagName==='a'||event.target.tagName==='img') {
+        return true
+      }
       $(this[i]).addClass('touch-disable-selection')
       start[i] = event.touches[0]
       timeout = setTimeout(fn, length) // If press longer than 2000ms, the fn will not be called
+      event.preventDefault()
+      event.stopPropagation()
       return false
     }, true)
     this[i].addEventListener('touchmove', (event) => {
+      if (event.target.tagName==='a'||event.target.tagName==='img') {
+        return true
+      }
       if (start[i] && moveDistance(event.touches[0], start[i]) > 200) {
         // The user moves their finger too far
         // they may want to scroll the screen.
@@ -49,6 +57,9 @@ $.fn.longPress = function(length, fn, fnRelease) {
       }
     }, true)
     this[i].addEventListener('touchend', () => {
+      if (event.target.tagName==='a'||event.target.tagName==='img') {
+        return true
+      }
       onRelease(i)
       return false
     }, true)
@@ -130,7 +141,7 @@ export default createWidget('babble-post', {
   html() {
     const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
     const isMobile = $('html').hasClass('mobile-view')
-    const $tgt = (isMobile?$sel:$sel.find('div.babble-post-content'))
+    const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
     const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
       $sel.addClass('selected')
       this.showActions({
@@ -166,11 +177,14 @@ export default createWidget('babble-post', {
         $('.modal-backdrop').off('click.babble-post-action-remove')
       }
     }
-    $tgt.longPress(2000,function() {
-      setupActions(callbacks)
-    }).dblclick(function() {
+    $tgt.dblclick(function() {
       setupActions(callbacks)
     })
+    if (isMobile) {
+      $tgt.longPress(2000,function() {
+        setupActions(callbacks)
+      })
+    }
     return template.render(this)
   }
 })

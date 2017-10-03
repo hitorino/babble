@@ -4,6 +4,17 @@ import computed from 'ember-addons/ember-computed-decorators'
 import { userPath } from 'discourse/lib/url'
 import ApplicationRoute from 'discourse/routes/application'
 
+$(window).ready(()=>{
+  ApplicationRoute.reopen({
+    actions: {
+      closeModal: function(){
+        this._super(...arguments)
+        this.appEvents.trigger('babble-dmodal:closed')
+      }
+    }
+  })
+})
+
 export default Ember.Controller.extend(ModalFunctionality, {
   topic: null,
   post: null,
@@ -16,14 +27,6 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   init() {
     this._super(...arguments)
-    ApplicationRoute.reopen({
-      actions: {
-        closeModal: function(){
-          this._super(...arguments)
-          this.appEvents.trigger('babble-dmodal:closed')
-        }
-      }
-    })
     this.appEvents.on('babble-dmodal:closed',()=>{
       this.onDestroy()
     })
@@ -61,6 +64,24 @@ export default Ember.Controller.extend(ModalFunctionality, {
     },
     delete() {
       Babble.destroyPost(this.get('topic'), this.get('post'))
+      this.send('closeModal')
+    },
+    copy() {
+      if (!window.getSelection) { return }
+      const pn = this.get('post').get('post_number')
+      const ePostCooked = $(`li[data-post-number=${pn}] .babble-post-cooked`)[0]
+      const range = document.createRange()
+      range.selectNodeContents(ePostCooked)
+      const selection = window.getSelection()
+      selection.removeAllRanges()
+      selection.addRange(range)
+      try {
+        document.execCommand ("copy", false, null)
+      } catch(e) {
+        console.log("Your browser doesn't support copy!")
+        console.log(selection.toString())
+      }
+      selection.removeAllRanges()
       this.send('closeModal')
     }
   }
