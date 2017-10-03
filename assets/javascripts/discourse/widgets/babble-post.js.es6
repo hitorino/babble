@@ -95,8 +95,8 @@ export default createWidget('babble-post', {
 
   showActions (callbacks = {onShow: null, onDestroy: null}) {
     let post = this.state.post
-    this.set('postActionController', showModal('babblePostActions'))
-    this.get('postActionController').setProperties({
+    this.postActionController = showModal('babblePostActions')
+    this.postActionController.setProperties({
       post_name: post.get('username'),
       post_quote: $(post.get('cooked')).text(),
       topic: this.state.topic,
@@ -142,14 +142,14 @@ export default createWidget('babble-post', {
       })
     }
     const callbacks = {
-      onShow() {
+      onShow(controller) {
         if (isMobile) {
           $('.modal-backdrop').remove()
         } else {
           $('.modal-backdrop').off('click.babble-post-action-remove')
           $('.modal-backdrop').on(
             'click.babble-post-action-remove',
-            (controller)=>{
+            ()=>{
               $sel.removeClass('selected')
               controller.send('closeModal')
             }
