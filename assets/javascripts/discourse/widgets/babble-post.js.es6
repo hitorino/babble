@@ -125,15 +125,13 @@ export default createWidget('babble-post', {
     Ember.run.scheduleOnce('afterRender', () => {
       const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
       const isMobile = $('html').hasClass('mobile-view')
-      const $tgt = isMobile?
-        $sel.find('div.babble-post-content') :
-        $sel
+      const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
       const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
+        $sel.addClass('selected')
         this.showActions({
           onShow: ()=> {
-            $sel.addClass('selected')
             if (callbacks.onShow) {
-              callbacks.onShow()
+              Ember.run.scheduleOnce('afterRender', callbacks.onShow)
             }
           },
           onDestroy: ()=>{
@@ -147,12 +145,15 @@ export default createWidget('babble-post', {
       const callbacks = {
         onShow() {
           if (isMobile) {
-            $('.modal-backdrop').css('display','none')
+            $('.modal-backdrop').remove()
           } else {
             $('.modal-backdrop').off('click.babble-post-action-remove')
             $('.modal-backdrop').on(
               'click.babble-post-action-remove',
-              ()=>$sel.removeClass('selected')
+              (controller)=>{
+                $sel.removeClass('selected')
+                controller.send('closeModal')
+              }
             )
           }
         },

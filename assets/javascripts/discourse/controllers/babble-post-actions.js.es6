@@ -23,9 +23,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
   onShow() {
     $('#discourse-modal').addClass('babble-post-actions-modal')
     if (this.get('callbacks').onShow) {
-      Ember.run.scheduleOnce('afterRender', () => {
-        this.get('callbacks').onShow()
-      })
+      this.get('callbacks').onShow(this)
     }
   },
 
