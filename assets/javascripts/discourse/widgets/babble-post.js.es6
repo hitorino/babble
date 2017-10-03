@@ -37,10 +37,14 @@ $.fn.longPress = function(length, fn, fnRelease) {
     }, true)
     this[i].addEventListener('touchmove', (event) => {
       if (start[i] && moveDistance(event.touches[0], start[i]) > 200) {
+        // The user moves their finger too far
+        // they may want to scroll the screen.
         if (preventExecution($(this[i]))) {
           onRelease(i)
         }
       } else if ($(this[i]).hasClass('touch-disable-selection')) {
+        event.preventDefault()
+        event.stopPropagation()
         return false
       }
     }, true)
