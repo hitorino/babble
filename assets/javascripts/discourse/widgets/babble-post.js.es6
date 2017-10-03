@@ -124,7 +124,7 @@ export default createWidget('babble-post', {
   html() {
     const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
     const isMobile = $('html').hasClass('mobile-view')
-    const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
+    const $tgt = (isMobile?$sel:$sel.find('div.babble-post-content'))
     const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
       $sel.addClass('selected')
       this.showActions({
