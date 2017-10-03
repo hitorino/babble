@@ -32,17 +32,21 @@ $.fn.longPress = function(length, fn, fnRelease) {
     this[i].addEventListener('touchstart', (event) => {
       if (event.target.tagName==='a'||event.target.tagName==='img') {
         return true
+      } else {
+        event.preventDefault()
+        event.stopPropagation()
       }
       $(this[i]).addClass('touch-disable-selection')
       start[i] = event.touches[0]
       timeout = setTimeout(fn, length) // If press longer than 2000ms, the fn will not be called
-      event.preventDefault()
-      event.stopPropagation()
       return false
     }, true)
     this[i].addEventListener('touchmove', (event) => {
       if (event.target.tagName==='a'||event.target.tagName==='img') {
         return true
+      } else {
+        event.preventDefault()
+        event.stopPropagation()
       }
       if (start[i] && moveDistance(event.touches[0], start[i]) > 200) {
         // The user moves their finger too far
@@ -50,15 +54,15 @@ $.fn.longPress = function(length, fn, fnRelease) {
         if (preventExecution($(this[i]))) {
           onRelease(i)
         }
-      } else if ($(this[i]).hasClass('touch-disable-selection')) {
-        event.preventDefault()
-        event.stopPropagation()
-        return false
       }
+      return false
     }, true)
     this[i].addEventListener('touchend', () => {
       if (event.target.tagName==='a'||event.target.tagName==='img') {
         return true
+      } else {
+        event.preventDefault()
+        event.stopPropagation()
       }
       onRelease(i)
       return false
