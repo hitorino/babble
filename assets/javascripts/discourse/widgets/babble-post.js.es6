@@ -40,6 +40,8 @@ $.fn.longPress = function(length, fn, fnRelease) {
         if (preventExecution($(this[i]))) {
           onRelease(i)
         }
+      } else if ($(this[i]).hasClass('touch-disable-selection')) {
+        return false
       }
     }, true)
     this[i].addEventListener('touchend', () => {
