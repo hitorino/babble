@@ -23,50 +23,32 @@ $.fn.longPress = function(length, fn, fnRelease) {
   const onRelease = (i)=> {
     if (fnRelease)
       fnRelease()
-    start[i] = null
+    start = new Array(this.length)
     clearTimeout(timeout)
     timeout = undefined
-    $(this[i]).removeClass('touch-disable-selection')
+    $(this).removeClass('touch-disable-selection')
   }
   for(var i = 0;i<this.length;i++){
     this[i].addEventListener('touchstart', (event) => {
-      if (event.target.tagName==='a'||event.target.tagName==='img') {
-        return true
-      } else {
-        event.preventDefault()
-        event.stopPropagation()
-      }
-      $(this[i]).addClass('touch-disable-selection')
+      $(this).addClass('touch-disable-selection')
       start[i] = event.touches[0]
       timeout = setTimeout(fn, length) // If press longer than 2000ms, the fn will not be called
       return false
     }, true)
     this[i].addEventListener('touchmove', (event) => {
-      if (event.target.tagName==='a'||event.target.tagName==='img') {
-        return true
-      } else {
-        event.preventDefault()
-        event.stopPropagation()
-      }
       if (start[i] && moveDistance(event.touches[0], start[i]) > 200) {
         // The user moves their finger too far
         // they may want to scroll the screen.
-        if (preventExecution($(this[i]))) {
+        if (preventExecution($(this))) {
           onRelease(i)
         }
       }
       return false
-    }, true)
+    }, false)
     this[i].addEventListener('touchend', () => {
-      if (event.target.tagName==='a'||event.target.tagName==='img') {
-        return true
-      } else {
-        event.preventDefault()
-        event.stopPropagation()
-      }
       onRelease(i)
       return false
-    }, true)
+    }, false)
   }
   return this
 }
