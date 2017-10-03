@@ -36,7 +36,7 @@ $.fn.longPress = function(length, fn, fnRelease) {
       return false
     }, false)
     this[i].addEventListener('touchmove', (event) => {
-      if (start[i] && moveDistance(event.touches[0], start[i]) > 20) {
+      if (start[i] && moveDistance(event.touches[0], start[i]) > 200) {
         if (preventExecution($(this[i]))) {
           onRelease(i)
         }
@@ -122,49 +122,49 @@ export default createWidget('babble-post', {
   },
 
   html() {
-      const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
-      const isMobile = $('html').hasClass('mobile-view')
-      const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
-      const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
-        $sel.addClass('selected')
-        this.showActions({
-          onShow: ()=> {
-            if (callbacks.onShow) {
-              Ember.run.scheduleOnce('afterRender', callbacks.onShow)
-            }
-          },
-          onDestroy: ()=>{
-            $sel.removeClass('selected')
-            if (callbacks.onDestroy) {
-              callbacks.onDestroy()
-            }
-          }
-        })
-      }
-      const callbacks = {
-        onShow() {
-          if (isMobile) {
-            $('.modal-backdrop').remove()
-          } else {
-            $('.modal-backdrop').off('click.babble-post-action-remove')
-            $('.modal-backdrop').on(
-              'click.babble-post-action-remove',
-              (controller)=>{
-                $sel.removeClass('selected')
-                controller.send('closeModal')
-              }
-            )
+    const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
+    const isMobile = $('html').hasClass('mobile-view')
+    const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
+    const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
+      $sel.addClass('selected')
+      this.showActions({
+        onShow: ()=> {
+          if (callbacks.onShow) {
+            Ember.run.next(this, callbacks.onShow)
           }
         },
-        onDestroy() {
-          $('.modal-backdrop').off('click.babble-post-action-remove')
+        onDestroy: ()=>{
+          $sel.removeClass('selected')
+          if (callbacks.onDestroy) {
+            callbacks.onDestroy()
+          }
         }
-      }
-      $tgt.longPress(2000,function() {
-        setupActions(callbacks)
-      }).dblclick(function() {
-        setupActions(callbacks)
       })
+    }
+    const callbacks = {
+      onShow() {
+        if (isMobile) {
+          $('.modal-backdrop').remove()
+        } else {
+          $('.modal-backdrop').off('click.babble-post-action-remove')
+          $('.modal-backdrop').on(
+            'click.babble-post-action-remove',
+            (controller)=>{
+              $sel.removeClass('selected')
+              controller.send('closeModal')
+            }
+          )
+        }
+      },
+      onDestroy() {
+        $('.modal-backdrop').off('click.babble-post-action-remove')
+      }
+    }
+    $tgt.longPress(2000,function() {
+      setupActions(callbacks)
+    }).dblclick(function() {
+      setupActions(callbacks)
+    })
     return template.render(this)
   }
 })
