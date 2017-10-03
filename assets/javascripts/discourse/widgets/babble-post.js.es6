@@ -119,26 +119,28 @@ export default createWidget('babble-post', {
   },
 
   html() {
-    const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
-    const setupActions = ()=>{
-      this.showActions(()=>{
-        $sel.removeClass('selected')
-      })
-      $sel.addClass('selected')
-    }
-    $sel.find('div.babble-post-content').longPress(
-      200,
-      ()=>{
-        setupActions()
-        $('.modal-backdrop').css('display','none')
+    Ember.run.scheduleOnce('afterRender', () => {
+      const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
+      const setupActions = ()=>{
+        this.showActions(()=>{
+          $sel.removeClass('selected')
+        })
+        $sel.addClass('selected')
       }
-    ).dblclick(()=>{
-      setupActions()
-      $('.modal-backdrop').off('click.babble-post-action-remove')
-      $('.modal-backdrop').on(
-        'click.babble-post-action-remove',
-        ()=>$sel.removeClass('selected')
-      )
+      $sel.find('div.babble-post-content').longPress(
+        200,
+        ()=>{
+          setupActions()
+          $('.modal-backdrop').css('display','none')
+        }
+      ).dblclick(()=>{
+        setupActions()
+        $('.modal-backdrop').off('click.babble-post-action-remove')
+        $('.modal-backdrop').on(
+          'click.babble-post-action-remove',
+          ()=>$sel.removeClass('selected')
+        )
+      })
     })
     return template.render(this)
   }
