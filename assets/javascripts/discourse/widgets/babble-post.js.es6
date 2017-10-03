@@ -124,7 +124,8 @@ export default createWidget('babble-post', {
   html() {
     Ember.run.scheduleOnce('afterRender', () => {
       const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
-      const $tgt = $('html').hasClass('mobile-view')?
+      const isMobile = $('html').hasClass('mobile-view')
+      const $tgt = isMobile?
         $sel.find('div.babble-post-content') :
         $sel
       const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
@@ -143,26 +144,26 @@ export default createWidget('babble-post', {
           }
         })
       }
-      $tgt.longPress(2000, ()=>{
-        setupActions({
-          onShow () {
+      const callbacks = {
+        onShow() {
+          if (isMobile) {
             $('.modal-backdrop').css('display','none')
-          }
-        })
-      }).dblclick(()=>{
-        setupActions({
-          onShow () {
+          } else {
             $('.modal-backdrop').off('click.babble-post-action-remove')
-
             $('.modal-backdrop').on(
               'click.babble-post-action-remove',
               ()=>$sel.removeClass('selected')
             )
-          },
-          onDestroy() {
-            $('.modal-backdrop').off('click.babble-post-action-remove')
           }
-        })
+        },
+        onDestroy() {
+          $('.modal-backdrop').off('click.babble-post-action-remove')
+        }
+      }
+      $tgt.longPress(2000,function() {
+        setupActions(callbacks)
+      }).dblclick(function() {
+        setupActions(callbacks)
       })
     })
     return template.render(this)
