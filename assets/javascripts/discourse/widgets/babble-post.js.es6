@@ -122,7 +122,6 @@ export default createWidget('babble-post', {
   },
 
   html() {
-    Ember.run.scheduleOnce('afterRender', () => {
       const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
       const isMobile = $('html').hasClass('mobile-view')
       const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
@@ -166,7 +165,6 @@ export default createWidget('babble-post', {
       }).dblclick(function() {
         setupActions(callbacks)
       })
-    })
     return template.render(this)
   }
 })
