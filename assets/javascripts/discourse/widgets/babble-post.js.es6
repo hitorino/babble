@@ -1,24 +1,51 @@
-import { createWidget } from 'discourse/widgets/widget';
+import { createWidget } from 'discourse/widgets/widget'
 import Babble from '../lib/babble'
 import template from '../widgets/templates/babble-post'
-import { ajax } from 'discourse/lib/ajax'
 import { scrollToPost } from '../lib/chat-element-utils'
 import showModal from 'discourse/lib/show-modal'
 
-$.fn.longPress = function(fn) {
-  var timeout = undefined;
-  var $this = this;
-  for(var i = 0;i<$this.length;i++){
-    $this[i].addEventListener('touchstart', function(event) {
-      $this.addClass('touch-disable-selection');
-      timeout = setTimeout(fn, 2000);  //长按时间超过2000ms，则执行传入的方法
-      return false;
-    }, false);
-    $this[i].addEventListener('touchend', function(event) {
-      $this.removeClass('touch-disable-selection');
-      clearTimeout(timeout);  //长按时间少于2000ms，不会执行传入的方法
-      return false;
-    }, false);
+$.fn.longPress = function(length, fn, fnRelease) {
+  var timeout = undefined
+  let start = new Array(this.length)
+  const moveDistance = (t0, t1) => Math.sqrt(
+    Math.pow(t0.pageX-t1.pageX, 2) + Math.pow(t0.pageY-t1.pageY, 2)
+  )
+  const preventExecution = ($el)=> {
+    $el.removeClass('touch-disable-selection')
+    if (timeout === undefined) {
+      return false
+    } else {
+      clearTimeout(timeout) // If press shorter than 2000ms, the fn will not be called
+      timeout = undefined
+      return true
+    }
+  }
+  const onRelease = (i)=> {
+    if (fnRelease)
+      fnRelease()
+    start[i] = null
+    clearTimeout(timeout)
+    timeout = undefined
+    $(this[i]).removeClass('touch-disable-selection')
+  }
+  for(var i = 0;i<this.length;i++){
+    this[i].addEventListener('touchstart', (event) => {
+      $(this[i]).addClass('touch-disable-selection')
+      start[i] = event.touches[0]
+      timeout = setTimeout(fn, length) // If press longer than 2000ms, the fn will not be called
+      return false
+    }, false)
+    this[i].addEventListener('touchmove', (event) => {
+      if (start[i] && moveDistance(event.touches[0], start[i]) > 20) {
+        if (preventExecution($(this[i]))) {
+          onRelease(i)
+        }
+      }
+    }, false)
+    this[i].addEventListener('touchend', () => {
+      onRelease(i)
+      return false
+    }, false)
   }
 }
 
@@ -30,10 +57,9 @@ export function getPostContent (topic, postNumber) {
   if (!post) {
     return {username: '', content: ''}
   }
-//  const $pc = $(`li[data-post-number=${postNumber}] .babble-post-content`)
   return {
-    username: post.get('username'), //$pc.find('.babble-post-name').text(),
-    content: $(post.get('cooked')).text()//$pc.find('.babble-post-cooked').text()
+    username: post.get('username'),
+    content: $(post.get('cooked')).text()
   }
 }
 
@@ -65,13 +91,14 @@ export default createWidget('babble-post', {
     }
   },
 
-  showActions () {
+  showActions (callback) {
     let post = this.state.post
     showModal('babblePostActions').setProperties({
       post_name: post.get('username'),
       post_quote: $(post.get('cooked')).text(),
       topic: this.state.topic,
-      post: post
+      post: post,
+      callback
     })
   },
 
@@ -93,11 +120,25 @@ export default createWidget('babble-post', {
 
   html() {
     const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
-    $sel.longPress(()=>{
-      this.showActions()
-    })
-    $sel.dblclick(()=>{
-      this.showActions()
+    const setupActions = ()=>{
+      this.showActions(()=>{
+        $sel.removeClass('selected')
+      })
+      $sel.addClass('selected')
+    }
+    $sel.find('div.babble-post-content').longPress(
+      200,
+      ()=>{
+        setupActions()
+        $('.modal-backdrop').css('display':'none')
+      }
+    ).dblclick(()=>{
+      setupActions()
+      $('.modal-backdrop').off('click.babble-post-action-remove')
+      $('.modal-backdrop').on(
+        'click.babble-post-action-remove',
+        ()=>$sel.removeClass('selected')
+      )
     })
     return template.render(this)
   }

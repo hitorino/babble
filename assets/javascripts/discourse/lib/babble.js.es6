@@ -135,6 +135,7 @@ export default Ember.Object.create({
     } else {
       topic.set('editingPostId', null)
     }
+    setupComposer(topic)
   },
 
   replyPost(topic, post) {
@@ -144,6 +145,7 @@ export default Ember.Object.create({
     } else {
       topic.set('replyingPostNumber', null)
     }
+    setupComposer(topic)
   },
 
   updatePost(topic, post, text) {

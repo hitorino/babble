@@ -36,6 +36,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
       this.send('closeModal')
     },
     closeModal() {
+      this.get('callback')()
       $('#discourse-modal').removeClass('babble-post-actions-modal')
       this._super(...arguments)
     }
