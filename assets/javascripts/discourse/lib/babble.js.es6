@@ -52,7 +52,7 @@ export default Ember.Object.create({
         setupScrollContainer(topic)
         setupPresence(topic)
         setupComposer(topic)
-        scrollToPost(topic, topic.highest_post_number, 0)
+        scrollToPost(topic, latestPostFor(topic).post_number, 0)
         applyBrowserHacks(topic)
       }
       rerender(topic)
@@ -224,7 +224,7 @@ export default Ember.Object.create({
     return ajax(`/babble/topics/${topic.id}/posts/${postNumber}/${order}`).then((data) => {
       data.posts.map(function(post) { topic.postStream.appendPost(Post.create(post)) })
       syncWithPostStream(topic)
-      scrollToPost(topic, latestPostFor(topic))
+      scrollToPost(topic, latestPostFor(topic).post_number)
     }).finally(() => {
       topic.set('loadingPosts', null)
     })
