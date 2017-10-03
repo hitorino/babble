@@ -125,22 +125,29 @@ export default createWidget('babble-post', {
       const $tgt = $('html').hasClass('mobile-view')?
         $sel.find('div.babble-post-content') :
         $sel
-      const setupActions = ()=>{
+      const setupActions = (cb)=>{
         this.showActions(()=>{
           $sel.removeClass('selected')
         })
         $sel.addClass('selected')
+        if (cb) {
+          Ember.run.scheduleOnce('afterRender', cb)
+        }
       }
       $tgt.longPress(2000, ()=>{
-        setupActions()
-        $('.modal-backdrop').css('display','none')
+        setupActions(function () {
+          $('.modal-backdrop').css('display','none')
+        })
       }).dblclick(()=>{
-        setupActions()
-        $('.modal-backdrop').off('click.babble-post-action-remove')
-        $('.modal-backdrop').on(
-          'click.babble-post-action-remove',
-          ()=>$sel.removeClass('selected')
-        )
+        setupActions(function () {
+          $('.modal-backdrop').off('click.babble-post-action-remove')
+
+          $('.modal-backdrop').on(
+            'click.babble-post-action-remove',
+            ()=>$sel.removeClass('selected')
+          )
+          
+        })
       })
     })
     return template.render(this)
