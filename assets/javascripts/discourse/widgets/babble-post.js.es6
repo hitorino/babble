@@ -66,6 +66,7 @@ export function getPostContent (topic, postNumber) {
 
 export default createWidget('babble-post', {
   tagName: 'li.babble-post',
+  postActionController: null,
 
   buildKey(attrs) {
     return `babble-post-${attrs.post.id}`
@@ -92,14 +93,15 @@ export default createWidget('babble-post', {
     }
   },
 
-  showActions (callback) {
+  showActions (callbacks = {onShow: null, onDestroy: null}) {
     let post = this.state.post
-    showModal('babblePostActions').setProperties({
+    this.set('postActionController', showModal('babblePostActions'))
+    this.get('postActionController').setProperties({
       post_name: post.get('username'),
       post_quote: $(post.get('cooked')).text(),
       topic: this.state.topic,
       post: post,
-      callback
+      callbacks
     })
   },
 
@@ -125,28 +127,41 @@ export default createWidget('babble-post', {
       const $tgt = $('html').hasClass('mobile-view')?
         $sel.find('div.babble-post-content') :
         $sel
-      const setupActions = (cb)=>{
-        this.showActions(()=>{
-          $sel.removeClass('selected')
+      const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
+        this.showActions({
+          onShow: ()=> {
+            $sel.addClass('selected')
+            if (callbacks.onShow) {
+              callbacks.onShow()
+            }
+          },
+          onDestroy: ()=>{
+            $sel.removeClass('selected')
+            if (callbacks.onDestroy) {
+              callbacks.onDestroy()
+            }
+          }
         })
-        $sel.addClass('selected')
-        if (cb) {
-          Ember.run.scheduleOnce('afterRender', cb)
-        }
       }
       $tgt.longPress(2000, ()=>{
-        setupActions(function () {
-          $('.modal-backdrop').css('display','none')
+        setupActions({
+          onShow () {
+            $('.modal-backdrop').css('display','none')
+          }
         })
       }).dblclick(()=>{
-        setupActions(function () {
-          $('.modal-backdrop').off('click.babble-post-action-remove')
+        setupActions({
+          onShow () {
+            $('.modal-backdrop').off('click.babble-post-action-remove')
 
-          $('.modal-backdrop').on(
-            'click.babble-post-action-remove',
-            ()=>$sel.removeClass('selected')
-          )
-          
+            $('.modal-backdrop').on(
+              'click.babble-post-action-remove',
+              ()=>$sel.removeClass('selected')
+            )
+          },
+          onDestroy() {
+            $('.modal-backdrop').off('click.babble-post-action-remove')
+          }
         })
       })
     })

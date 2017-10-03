@@ -10,6 +10,10 @@ export default Ember.Controller.extend(ModalFunctionality, {
   post: null,
   post_name: '',
   post_quote: '',
+  callbacks: {
+    onShow: null,
+    onDestroy: null
+  },
 
   @computed('post_name')
   post_user_url(post_name) {
@@ -18,6 +22,9 @@ export default Ember.Controller.extend(ModalFunctionality, {
 
   onShow() {
     $('#discourse-modal').addClass('babble-post-actions-modal')
+    if (this.get('callbacks').onShow) {
+      this.get('callbacks').onShow()
+    }
   },
 
   actions: {
@@ -36,7 +43,9 @@ export default Ember.Controller.extend(ModalFunctionality, {
       this.send('closeModal')
     },
     closeModal() {
-      this.get('callback')()
+      if (this.get('callbacks').onDestroy) {
+        this.get('callbacks').onDestroy()
+      }
       $('#discourse-modal').removeClass('babble-post-actions-modal')
       this._super(...arguments)
     }
