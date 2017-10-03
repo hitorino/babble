@@ -19,7 +19,7 @@ export default Ember.Controller.extend(ModalFunctionality, {
     ApplicationRoute.reopen({
       actions: {
         closeModal: function(){
-          this._super.apply(this,arguments)
+          this._super(...arguments)
           this.appEvents.trigger('babble-dmodal:closed')
         }
       }
