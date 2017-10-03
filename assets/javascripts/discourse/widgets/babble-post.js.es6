@@ -130,7 +130,7 @@ export default createWidget('babble-post', {
       200,
       ()=>{
         setupActions()
-        $('.modal-backdrop').css('display':'none')
+        $('.modal-backdrop').css('display','none')
       }
     ).dblclick(()=>{
       setupActions()
