@@ -3,8 +3,6 @@ import template from '../widgets/templates/babble-post-actions'
 import Babble from '../lib/babble'
 
 export default createWidget('babble-post-actions', {
-  onClose: null,
-
   buildKey() {
     return 'babblePostActions'
   },
@@ -13,7 +11,8 @@ export default createWidget('babble-post-actions', {
     return {
       topic: null,
       post: null,
-      show: false
+      show: false,
+      onClose: null,
     }
   },
 
@@ -21,10 +20,10 @@ export default createWidget('babble-post-actions', {
     this.state.show = false
     this.state.post = null
     this.state.topic = null
-    if (this.onClose) {
-      this.onClose()
+    if (this.state.onClose) {
+      this.state.onClose()
     }
-    this.onClose = null
+    this.state.onClose = null
     this.appEvents.trigger('babble-composer:rerender')
     this.scheduleRerender()
   },
@@ -68,8 +67,8 @@ export default createWidget('babble-post-actions', {
     this.appEvents.on('babble-post-actions:close', ()=>this.close())
     this.appEvents.off('babble-post-actions:show')
     this.appEvents.on('babble-post-actions:show', ({topic, post, onShow=null, onClose=null}) => {
-      if (this.onClose) {
-        this.onClose()
+      if (this.state.onClose) {
+        this.state.onClose()
       }
       this.state.topic = topic
       this.state.post = post
@@ -77,7 +76,7 @@ export default createWidget('babble-post-actions', {
       if (onShow) {
         onShow()
       }
-      this.onClose = onClose
+      this.state.onClose = onClose
       this.scheduleRerender()
     })
     return template.render(this)
