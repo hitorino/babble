@@ -114,12 +114,15 @@ export default createWidget('babble-post', {
 
   html() {
     const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
+    const $cnt = $sel.find('div.babble-post-content')
     const isMobile = $('html').hasClass('mobile-view')
-    const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
+    const $tgt = (isMobile?$cnt:$sel)
     const handler = () => {
       this.appEvents.trigger('babble-post-actions:show',{
         topic: this.state.topic,
-        post: this.state.post
+        post: this.state.post,
+        onShow: ()=> { $cnt.addClass('selected') },
+        onClose: ()=> { $cnt.removeClass('selected') }
       })
     }
     if (isMobile) {
