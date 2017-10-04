@@ -24,6 +24,7 @@ export default createWidget('babble-post-actions', {
     if (this.onClose) {
       this.onClose()
     }
+    this.onClose = null
     this.appEvents.trigger('babble-composer:rerender')
     this.scheduleRerender()
   },
@@ -67,6 +68,9 @@ export default createWidget('babble-post-actions', {
     this.appEvents.on('babble-post-actions:close', ()=>this.close())
     this.appEvents.off('babble-post-actions:show')
     this.appEvents.on('babble-post-actions:show', ({topic, post, onShow=null, onClose=null}) => {
+      if (this.onClose) {
+        this.onClose()
+      }
       this.state.topic = topic
       this.state.post = post
       this.state.show = true
