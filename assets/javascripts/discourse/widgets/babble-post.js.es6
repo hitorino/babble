@@ -122,11 +122,10 @@ export default createWidget('babble-post', {
         topic: this.state.topic,
         post: this.state.post,
         onShow: ()=> {
-          $('.babble-post').removeClass('selected')
           $sel.addClass('selected')
         },
         onClose: ()=> {
-          $sel.removeClass('selected')
+          $('.babble-post').removeClass('selected')
         }
       })
     }
