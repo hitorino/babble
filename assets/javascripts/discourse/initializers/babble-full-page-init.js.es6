@@ -3,15 +3,21 @@ import NavItem from 'discourse/models/nav-item'
 import Category from 'discourse/models/category'
 import CategoryController from 'discourse/controllers/navigation/category'
 import computed from 'ember-addons/ember-computed-decorators'
-import { observes } from 'ember-addons/ember-computed-decorators'
 import { customNavItemHref } from 'discourse/models/nav-item'
 import ChatComponent from '../components/chat-container'
 import NavigationBar from 'discourse/components/navigation-bar'
+import { withPluginApi } from 'discourse/lib/plugin-api'
 
 export default {
   name: 'babble-full-page-init',
   initialize() {
     if (Babble.disabled() || !Discourse.SiteSettings.babble_full_page) { return }
+
+    withPluginApi('0.1', api => {
+      api.decorateWidget('header:before', function(helper){
+        return helper.attach('babble-post-actions', { show: false })
+      })
+    })
 
     // Add full page chat to category navigation bar
     customNavItemHref(function(navItem) {
