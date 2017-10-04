@@ -11,3 +11,4 @@ en:
     babble_page_size: "Number of posts per chat page"
     babble_full_page: "Enable full page chat mode (accessible from the category page)"
     babble_shoutbox: "Enable the Babble shoutbox (appears in the site header)"
+    babble_longpress_duration: "Set long press duration on mobile devices, in millisecond."

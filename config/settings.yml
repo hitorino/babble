@@ -23,3 +23,6 @@ plugins:
   babble_shoutbox:
     default: true
     client: true
+  babble_longpress_duration:
+    default: 500
+    client: true

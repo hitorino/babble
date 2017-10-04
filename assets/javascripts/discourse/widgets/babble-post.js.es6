@@ -130,7 +130,11 @@ export default createWidget('babble-post', {
       })
     }
     if (isMobile) {
-      $tgt.on('contextmenu', '*', ()=>false).longPress(1200, handler)
+      let duration = Discourse.SiteSettings.babble_longpress_duration
+      if (isNaN(duration)) {
+        duration = 500
+      }
+      $tgt.on('contextmenu', '*', ()=>false).longPress(500, handler)
     }
     $tgt.dblclick(handler)
     return template.render(this)
