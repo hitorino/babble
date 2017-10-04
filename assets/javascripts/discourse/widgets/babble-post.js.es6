@@ -121,8 +121,13 @@ export default createWidget('babble-post', {
       this.appEvents.trigger('babble-post-actions:show',{
         topic: this.state.topic,
         post: this.state.post,
-        onShow: ()=> { $cnt.addClass('selected') },
-        onClose: ()=> { $cnt.removeClass('selected') }
+        onShow: ()=> {
+          $('.babble-post').removeClass('selected')
+          $sel.addClass('selected')
+        },
+        onClose: ()=> {
+          $sel.removeClass('selected')
+        }
       })
     }
     if (isMobile) {
