@@ -130,7 +130,7 @@ export default createWidget('babble-post', {
       })
     }
     if (isMobile) {
-      let duration = Discourse.SiteSettings.babble_longpress_duration
+      let duration = parseInt(Discourse.SiteSettings.babble_longpress_duration)
       if (isNaN(duration)) {
         duration = 500
       }
