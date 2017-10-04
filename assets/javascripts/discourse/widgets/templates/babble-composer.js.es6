@@ -92,7 +92,7 @@ export default Ember.Object.create({
 
   submitButton() {
     return this.widget.attach('button', {
-      className: 'submit-button',
+      className: 'submit-button'+(this.widget.get('hintType').type==='none'?'':' raised'),
       icon: 'reply',
       action: 'submit'
     })
