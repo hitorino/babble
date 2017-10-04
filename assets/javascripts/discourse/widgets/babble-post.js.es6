@@ -2,9 +2,8 @@ import { createWidget } from 'discourse/widgets/widget'
 import Babble from '../lib/babble'
 import template from '../widgets/templates/babble-post'
 import { scrollToPost } from '../lib/chat-element-utils'
-import showModal from 'discourse/lib/show-modal'
 
-$.fn.longPress = function(length, fn, fnRelease) {
+$.fn.longPress = function(duration, fn, fnRelease) {
   var timeout = undefined
   let start = new Array(this.length)
   const moveDistance = (t0, t1) => Math.sqrt(
@@ -15,12 +14,12 @@ $.fn.longPress = function(length, fn, fnRelease) {
     if (timeout === undefined) {
       return false
     } else {
-      clearTimeout(timeout) // If press shorter than 2000ms, the fn will not be called
+      clearTimeout(timeout) // If press remains shorter than given duration, the fn will not be called
       timeout = undefined
       return true
     }
   }
-  const onRelease = (i)=> {
+  const onRelease = ()=> {
     if (fnRelease)
       fnRelease()
     start = new Array(this.length)
@@ -32,7 +31,8 @@ $.fn.longPress = function(length, fn, fnRelease) {
     this[i].addEventListener('touchstart', (event) => {
       $(this).addClass('touch-disable-selection')
       start[i] = event.touches[0]
-      timeout = setTimeout(fn, length) // If press longer than 2000ms, the fn will not be called
+      // If press remains longer than given duration, the fn will be called
+      timeout = setTimeout(fn, duration)
       return false
     }, true)
     this[i].addEventListener('touchmove', (event) => {
@@ -96,18 +96,6 @@ export default createWidget('babble-post', {
     }
   },
 
-  showActions (callbacks = {onShow: null, onDestroy: null}) {
-    let post = this.state.post
-    this.postActionController = showModal('babblePostActions')
-    this.postActionController.setProperties({
-      post_name: post.get('username'),
-      post_quote: $(post.get('cooked')).text(),
-      topic: this.state.topic,
-      post: post,
-      callbacks
-    })
-  },
-
   edit() {
     Babble.editPost(this.state.topic, this.state.post)
   },
@@ -128,49 +116,16 @@ export default createWidget('babble-post', {
     const $sel = $(`li[data-post-number=${this.state.post.get('post_number')}]`)
     const isMobile = $('html').hasClass('mobile-view')
     const $tgt = (isMobile?$sel.find('div.babble-post-content'):$sel)
-    const setupActions = (callbacks = {onShow: null, onDestroy: null})=>{
-      $sel.addClass('selected')
-      this.showActions({
-        onShow: ()=> {
-          if (callbacks.onShow) {
-            Ember.run.next(this, callbacks.onShow)
-          }
-        },
-        onDestroy: ()=>{
-          $sel.removeClass('selected')
-          if (callbacks.onDestroy) {
-            callbacks.onDestroy()
-          }
-        }
+    const handler = () => {
+      this.appEvents.trigger('babble-post-actions:show',{
+        topic: this.state.topic,
+        post: this.state.post
       })
     }
-    const callbacks = {
-      onShow(controller) {
-        if (isMobile) {
-          $('.modal-backdrop').remove()
-        } else {
-          $('.modal-backdrop').off('click.babble-post-action-remove')
-          $('.modal-backdrop').on(
-            'click.babble-post-action-remove',
-            ()=>{
-              $sel.removeClass('selected')
-              controller.send('closeModal')
-            }
-          )
-        }
-      },
-      onDestroy() {
-        $('.modal-backdrop').off('click.babble-post-action-remove')
-      }
-    }
-    $tgt.dblclick(function() {
-      setupActions(callbacks)
-    })
     if (isMobile) {
-      $tgt.longPress(2000,function() {
-        setupActions(callbacks)
-      })
+      $tgt.on('contextmenu', '*', ()=>false).longPress(1200, handler)
     }
+    $tgt.dblclick(handler)
     return template.render(this)
   }
 })

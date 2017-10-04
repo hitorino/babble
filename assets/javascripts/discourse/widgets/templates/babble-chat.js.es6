@@ -14,6 +14,7 @@ export default Ember.Object.create({
 
   chatContents() {
     let contents = [
+      this.widget.attach('babble-post-actions', { show: false }),
       h('div.babble-list', { attributes: { 'scroll-container': 'inactive' } }, [
         this.pressurePlate('desc'),
         h('ul', {className: 'babble-posts'}, this.chatView()),
