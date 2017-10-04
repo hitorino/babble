@@ -20,15 +20,23 @@ export default {
     })
     Topic.reopen({
       url: function() {
-        let slug = this.get('slug') || '';
+        let slug = this.get('slug') || ''
         if (slug.trim().length === 0) {
-          slug = "topic";
+          slug = "topic"
         }
         if (this.get('archetype')!=='chat')
-          return Discourse.getURL("/t/") + slug + "/" + (this.get('id'));
+          return Discourse.getURL("/t/") + slug + "/" + (this.get('id'))
         else
-          return Discourse.getURL("/chat/") + this.get('category.fullSlug')+ "/" + (this.get('id'));
-      }.property('id','slug')
+          return Discourse.getURL("/chat/") + this.get('category.fullSlug')+ "/" + (this.get('id'))
+      }.property('id','slug'),
+
+      urlForPostNumber() {
+        if (this.get('archetype')!=='chat') {
+          return this._super(...arguments)
+        } else {
+          return this.get('url')
+        }
+      }
     })
     BEmojiComponent.reopen({})
   }

@@ -196,7 +196,8 @@ export default Ember.Object.create({
         topic.postStream.appendPost(post)
       }
 
-      if (performScroll) { scrollToPost(topic, post.post_number) }
+      //if (performScroll) { scrollToPost(topic, post.post_number) }
+      scrollToPost(topic, latestPostFor(topic).post_number)
     }
 
     syncWithPostStream(topic)
