@@ -123,9 +123,11 @@ export default createWidget('babble-post', {
         post: this.state.post,
         onShow: ()=> {
           $sel.addClass('selected')
+          this.appEvents.trigger('toolbar-babble:show')
         },
         onClose: ()=> {
           $('.babble-post').removeClass('selected')
+          this.appEvents.trigger('toolbar-babble:close')
         }
       })
     }
