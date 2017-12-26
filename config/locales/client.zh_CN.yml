@@ -33,6 +33,9 @@ zh_CN:
       logged_out: "您还没有登录，登录或注册后才可以聊天"
       go_to_chat: "打开聊天窗口"
 
+      upload_cancelled: "上传已取消"
+      upload_failed: "上传已取消"
+
       admin:
         new: "创建新频道"
         none_selected: "选择一个频道开始聊天"

@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "es6",
+        "experimentalDecorators": true,
+        "allowJs": true
+    },
+    "files": [
+        "assets/javascripts/**"
+    ]
+}

@@ -1,0 +1,74 @@
+env:
+  browser: true
+  es6: true
+extends: 'eslint:recommended'
+parser: 'babel-eslint'
+parserOptions:
+  ecmaVersion: 7
+  sourceType: module
+rules:
+  strict: 0
+  indent:
+    - error
+    - 2
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - off
+  semi:
+    - error
+    - never
+  no-fallthrough:
+    - warn
+globals: {
+  "Ember":true,
+  "jQuery":true,
+  "$":true,
+  "QUnit":true,
+  "RSVP":true,
+  "Discourse":true,
+  "Em":true,
+  "Handlebars":true,
+  "I18n":true,
+  "bootbox":true,
+  "moduleFor":true,
+  "moduleForComponent":true,
+  "Pretender":true,
+  "sandbox":true,
+  "controllerFor":true,
+  "test":true,
+  "visit":true,
+  "andThen":true,
+  "click":true,
+  "currentPath":true,
+  "currentRouteName":true,
+  "currentURL":true,
+  "fillIn":true,
+  "keyEvent":true,
+  "triggerEvent":true,
+  "count":true,
+  "exists":true,
+  "visible":true,
+  "invisible":true,
+  "asyncRender":true,
+  "selectDropdown":true,
+  "selectBox":true,
+  "expandSelectBox":true,
+  "collapseSelectBox":true,
+  "selectBoxSelectRow":true,
+  "selectBoxFillInFilter":true,
+  "asyncTestDiscourse":true,
+  "fixture":true,
+  "find":true,
+  "sinon":true,
+  "moment":true,
+  "_":true,
+  "alert":true,
+  "define":true,
+  "require":true,
+  "requirejs":true,
+  "hasModule":true,
+  "Blob":true,
+  "File":true
+}

@@ -157,10 +157,10 @@ export default createWidget('babble-composer', jQuery.extend(true, {
           append_img(upload)
           cacheShortUploadUrl(upload.short_url, upload.url)
         } else {
-          alert('上传已取消！')
+          alert(I18n.t('babble.upload_cancelled'))
         }
       } else {
-        alert('上传失败！')
+        alert(I18n.t('babble.upload_failed'))
       }
     })
   },
