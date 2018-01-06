@@ -14,6 +14,7 @@ export default Ember.Object.create({
     this.topic      = widget.state.topic
     this.isFollowOn = widget.state.isFollowOn
     this.isNewDay   = widget.state.isNewDay
+    this.post.usernameUrl = widget.state.post.get('usernameUrl')
     return this.container()
   },
 
