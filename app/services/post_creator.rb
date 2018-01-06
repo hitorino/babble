@@ -27,7 +27,7 @@ class ::Babble::PostCreator < ::PostCreator
   def trigger_after_events()
     super
 
-    post.trigger_post_process(true)
+    @post.trigger_post_process(true)
     TopicUser.update_last_read(@user, @topic.id, @post.post_number, PostTiming::MAX_READ_TIME_PER_BATCH, 0)
     PostAlerter.post_created(@post)
 
