@@ -1,0 +1,6 @@
+zh_TW:
+  site_settings:
+    babble_enabled: "啓用Babble在線留言板插件。"
+    babble_placeholder: "欲在消息發送框使用默認佔位符文字請留空，否則在此輸入自定義佔位符文字。"
+    babble_icon: "此處可以使用Font Awesome code (fa- omitted) 替換右上角的Babble圖標。詳見頁面 http://fontawesome.io/cheatsheet/ 上圖標對應碼。"
+    babble_category_name: "爲Babble主題創建Discourse分類。"
