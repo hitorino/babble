@@ -1,12 +1,10 @@
 import Post from 'discourse/models/post'
 import PostStream from 'discourse/models/post-stream'
 import Topic from 'discourse/models/topic'
-import elementIsVisible from '../lib/element-is-visible'
 import lastVisibleElement from '../lib/last-visible-element'
-import debounce from 'discourse/lib/debounce'
 import { ajax } from 'discourse/lib/ajax'
-import { applyBrowserHacks, scrollToPost, setupResize, teardownResize, setupScrollContainer, setupComposer, teardownComposer, hasChatElements } from '../lib/chat-element-utils'
-import { syncWithPostStream, latestPostFor, latestPostIsMine, setupPresence, teardownPresence, setupLastReadMarker } from '../lib/chat-topic-utils'
+import { applyBrowserHacks, setupResize, teardownResize, setupScrollContainer, setupComposer, teardownComposer, hasChatElements } from '../lib/chat-element-utils'
+import { syncWithPostStream, latestPostIsMine, setupPresence, teardownPresence, setupLastReadMarker } from '../lib/chat-topic-utils'
 import { forEachTopicContainer } from '../lib/chat-topic-iterators'
 import { rerender } from '../lib/chat-component-utils'
 import { setupLiveUpdate, teardownLiveUpdate } from '../lib/chat-live-update-utils'
@@ -49,7 +47,6 @@ export default Ember.Object.create({
         setupScrollContainer(topic)
         setupPresence(topic)
         setupComposer(topic)
-        scrollToPost(topic, latestPostFor(topic).post_number, 0)
         applyBrowserHacks(topic)
       }
       rerender(topic)
@@ -195,9 +192,6 @@ export default Ember.Object.create({
         if (performScroll) { topic.set('last_read_post_number', post.post_number) }
         topic.postStream.appendPost(post)
       }
-
-      //if (performScroll) { scrollToPost(topic, post.post_number) }
-      scrollToPost(topic, latestPostFor(topic).post_number)
     }
 
     syncWithPostStream(topic)
@@ -224,7 +218,6 @@ export default Ember.Object.create({
     return ajax(`/babble/topics/${topic.id}/posts/${postNumber}/${order}`).then((data) => {
       data.posts.map(function(post) { topic.postStream.appendPost(Post.create(post)) })
       syncWithPostStream(topic)
-      scrollToPost(topic, latestPostFor(topic).post_number)
     }).finally(() => {
       topic.set('loadingPosts', null)
     })
@@ -249,7 +242,6 @@ export default Ember.Object.create({
     })
     topic.postStream.stagePost(post, user)
     topic.set('lastLoadedPostNumber', post.post_number)
-    scrollToPost(topic, post.post_number)
     teardownComposer(topic)
     rerender(topic)
   }
