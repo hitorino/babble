@@ -141,15 +141,6 @@ export default createWidget('babble-composer', jQuery.extend(true, {
       autosize.update(this.composerElement())
     }
     this._bindUploadTarget()
-    showModal('uploadSelector').setProperties({
-      imageUrl: null,
-      imageLink: null,
-      toolbarEvent: {
-        addText: (text) => {
-          append_img({url: text.match(/[^\/]+\.[^\/]{1,3}$/g)})
-        }
-      }
-    })
     this.messageBus.subscribe("/uploads/composer", upload => {
       // replace upload placeholder
       if (upload && upload.url) {
