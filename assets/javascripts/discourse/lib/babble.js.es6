@@ -3,7 +3,7 @@ import PostStream from 'discourse/models/post-stream'
 import Topic from 'discourse/models/topic'
 import lastVisibleElement from '../lib/last-visible-element'
 import { ajax } from 'discourse/lib/ajax'
-import { applyBrowserHacks, setupResize, teardownResize, setupScrollContainer, setupComposer, teardownComposer, hasChatElements } from '../lib/chat-element-utils'
+import { applyBrowserHacks, setupResize, teardownResize, setupScrollContainer, setupComposer, teardownComposer, hasChatElements, scrollToPost } from '../lib/chat-element-utils'
 import { syncWithPostStream, latestPostIsMine, setupPresence, teardownPresence, setupLastReadMarker } from '../lib/chat-topic-utils'
 import { forEachTopicContainer } from '../lib/chat-topic-iterators'
 import { rerender } from '../lib/chat-component-utils'
@@ -192,6 +192,9 @@ export default Ember.Object.create({
         if (performScroll) { topic.set('last_read_post_number', post.post_number) }
         topic.postStream.appendPost(post)
       }
+
+
+      if (performScroll) { scrollToPost(topic, post.post_number) }
     }
 
     syncWithPostStream(topic)
