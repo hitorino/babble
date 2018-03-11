@@ -99,12 +99,6 @@ export default createWidget('babble-composer', jQuery.extend(true, {
   },
 
   _bindUploadTarget() {
-    const append_img = upload => {
-      const val = this.composerElement().val()
-      this.composerElement().val(val + getUploadMarkdown(upload))
-      autosize.update(this.composerElement())
-    }
-    
     this._unbindUploadTarget() // in case it's still bound, let's clean it up first
 
     const $element = this.composerWrapper()
@@ -138,22 +132,28 @@ export default createWidget('babble-composer', jQuery.extend(true, {
       }
     })
 
-    $element.on("fileuploaddone", (e, data) => {
-      let upload = data.result
-
-      if (!this._xhr || !this._xhr._userCancelled) {
-        cacheShortUploadUrl(upload.short_url, upload.url)
-        append_img(upload)
-      } else {
-        alert(I18n.t('babble.upload_cancelled'))
-      }
-    })
-
   },
 
   showUploadModal() {
+    const append_img = upload => {
+      const val = this.composerElement().val()
+      this.composerElement().val(val + getUploadMarkdown(upload))
+      autosize.update(this.composerElement())
+    }
     this._bindUploadTarget()
-    showModal('uploadSelector')
+    this.messageBus.subscribe("/uploads/composer", upload => {
+      // replace upload placeholder
+      if (upload && upload.url) {
+        if (!this._xhr || !this._xhr._userCancelled) {
+          append_img(upload)
+          cacheShortUploadUrl(upload.short_url, upload.url)
+        } else {
+          alert(I18n.t('babble.upload_cancelled'))
+        }
+      } else {
+        alert(I18n.t('babble.upload_failed'))
+      }
+    })
   },
 
 
