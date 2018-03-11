@@ -1,6 +1,6 @@
 # name: babble
 # about: Shoutbox plugin for Discourse
-# version: 3.1.8
+# version: 2.0.4
 # authors: James Kiesel (gdpelican)
 # url: https://github.com/gdpelican/babble
 
@@ -42,7 +42,13 @@ after_initialize do
 
   Category.register_custom_field_type('chat_topic_id', :integer)
   add_to_serializer(:basic_category, :chat_topic_id) { object.custom_fields['chat_topic_id'] unless object.custom_fields['chat_topic_id'].to_i == 0 }
-  add_to_serializer(:basic_topic, :category_id)      { object.category_id if object.respond_to?(:category_id) }
+  add_to_serializer(:basic_topic, :category_id)      { object.category_id }
+
+  # NB: We're migrating from a category to an archetype to track chats
+  if old_chat_category = Category.find_by(name: SiteSetting.babble_category_name)
+    Topic.where(category_id: old_chat_category.id).update_all(archetype: :chat, category_id: nil)
+    old_chat_category.destroy
+  end
 
   class ::Topic
 
