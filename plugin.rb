@@ -84,18 +84,4 @@ after_initialize do
   TopicListItemSerializer.class_eval do
     attributes :archetype
   end
-
-  class ::PostAlerter
-    define_method(:notify_non_pm_users) do |users, type, post, opts = {}|
-      return if post.topic.archetype=='chat'
-      return if post.topic.try(:private_message?)
-
-      users = [users] unless users.is_a?(Array)
-
-      users.each do |u|
-        create_notification(u, Notification.types[type], post, opts)
-      end
-    end
-  end
-
 end

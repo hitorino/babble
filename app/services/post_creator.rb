@@ -29,7 +29,7 @@ class ::Babble::PostCreator < ::PostCreator
 
     @post.trigger_post_process(true)
     TopicUser.update_last_read(@user, @topic.id, @post.post_number, @post.post_number, PostTiming::MAX_READ_TIME_PER_BATCH)
-    PostAlerter.post_created(@post)
+#    PostAlerter.post_created(@post)
 
     Babble::Broadcaster.publish_to_posts(@post, @user)
     Babble::Broadcaster.publish_to_topic(@topic, @user)
